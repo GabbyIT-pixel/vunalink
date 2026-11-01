@@ -1,3 +1,4 @@
+import { looksLikeLeaf } from "../image/leaf-gate";
 import * as ort from "onnxruntime-web";
 import { loadModel } from "./model";
 import { postprocess } from "./postprocess";
@@ -10,6 +11,7 @@ export async function runInference(image: Blob, metadata: ModelMetadata): Promis
     const shape = metadata.input;
     if (!shape) return { status: "error", message: "The local crop model has no input settings." };
     const prepared = await imageToModelInput(image, { width: shape.width, height: shape.height });
+    if (!looksLikeLeaf(prepared.data)) return { status: "unsupported-class", classId: -1 };
     const tensor = new ort.Tensor("float32", prepared.data, [1, shape.height, shape.width, shape.channels]);
     const output = await session.run({ [session.inputNames[0]]: tensor });
     return postprocess(Array.from(output[session.outputNames[0]].data as Float32Array), metadata);
