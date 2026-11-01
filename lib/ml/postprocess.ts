@@ -5,6 +5,8 @@ import type { InferenceResult, ModelMetadata } from "./types";
 const TARGET_CROP = "Tomato";
 // Provisional cutoff, not a measured value. Tune it on test images.
 const MIN_TARGET_CROP_PROBABILITY = 0.8;
+// Provisional: the best tomato class must also be fairly confident.
+const MIN_TOP_CLASS_CONFIDENCE = 0.6;
 
 export function postprocess(output: readonly number[], metadata: ModelMetadata): InferenceResult {
   if (!output.length || output.some((value) => !Number.isFinite(value))) {
@@ -30,6 +32,7 @@ export function postprocess(output: readonly number[], metadata: ModelMetadata):
 
   // Best tomato class.
   const classId = targetIds.reduce((best, id) => (output[id] > output[best] ? id : best), targetIds[0]);
+  if (output[classId] < MIN_TOP_CLASS_CONFIDENCE) return { status: "unsupported-class", classId };
   const label = getLabel(classId);
   if (!label) return { status: "unsupported-class", classId };
 
