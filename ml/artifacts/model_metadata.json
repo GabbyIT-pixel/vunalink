@@ -42,7 +42,7 @@
     "unsure_threshold": 0.9,
     "unsure_rule": "ask an agent if the top class is 'Tomato___other' or its probability is below unsure_threshold",
     "target_answered_accuracy": 0.95,
-    "note": "The unsure threshold is chosen on PlantVillage validation data and is optimistic for field photos. Re-check it against the field evaluation sweep.",
+    "note": "The 0.90 threshold was chosen on PlantDoc field validation photos (see threshold_selection). Field photos are web photos, not Rwandan farms; re-check the threshold when farm photos are available.",
     "automatic_threshold": 0.7,
     "threshold_selection": "Raised from the automatic 0.70 (chosen on mostly-lab validation photos) to 0.90 after a sweep on the 111 PlantDoc field validation photos: wrong answers fell from 7 to 3 between 0.70 and 0.90. The field test sweep agreed (15 -> 6 wrong answers on 187 photos)."
   },

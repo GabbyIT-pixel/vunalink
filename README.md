@@ -1,12 +1,13 @@
 # VunaLink
 
-VunaLink is a mobile-first Progressive Web App for Rwandan smallholder farmers. It lets a farmer capture or choose a crop-leaf image, run a local crop-disease model, and read simple guidance without sending the image to a server.
+VunaLink is a mobile-first Progressive Web App for Rwandan smallholder farmers. A farmer photographs a tomato leaf, a disease model runs on the phone, and the app gives simple guidance in Kinyarwanda or English, without sending the photo to a server. When the model is unsure, or the photo shows a problem it doesn't cover, the app gives no diagnosis and tells the farmer to ask an extension agent.
 
 ## Features
 
 - Camera capture and image upload for JPG, PNG, and WebP files.
-- Local PlantVillage-trained crop classification in the browser.
-- Kinyarwanda disease names and guidance, with English data available in the localization layer.
+- On-device tomato disease classification: early blight, late blight, healthy, or "other".
+- "Ask an extension agent" result instead of a guess for low-confidence photos, other tomato problems, and non-tomato photos.
+- Results and guidance in Kinyarwanda and English, switchable on the result screen.
 - Offline agricultural recommendations from a bundled knowledge base.
 - Diagnosis history stored privately on the device.
 - Installable PWA with a service worker and local ONNX Runtime Web assets.
@@ -16,15 +17,16 @@ VunaLink is a mobile-first Progressive Web App for Rwandan smallholder farmers. 
 
 ```text
 User → Next.js PWA → image validation and resize → MobileNetV2 ONNX
-     → local ONNX Runtime Web / WebAssembly inference → disease prediction
-     → local recommendation knowledge base → Kinyarwanda result and guidance
+     → local ONNX Runtime Web / WebAssembly inference → calibrated class probabilities
+     → unsure rule (top class "other", or confidence below the threshold → ask an agent)
+     → local recommendation knowledge base → Kinyarwanda / English result and guidance
 ```
 
 The model only predicts disease classes. Recommendations are separate from inference and do not require a language model.
 
 ## Offline architecture
 
-The service worker (`public/sw.js`) precaches the core routes, manifest, model, and ONNX Runtime Web assets during installation. Successful same-origin application responses are also cached for later navigation. External requests are not handled by the service worker.
+The service worker (`public/sw.js`) precaches the core routes, manifest, model, and ONNX Runtime Web assets during installation. Successful same-origin application responses are also cached for later navigation. External requests are not handled by the service worker. Bump `CACHE_NAME` in `public/sw.js` whenever the model changes, so installed apps fetch the new one.
 
 Diagnosis records are stored in an IndexedDB database named `vunalink`, in the `diagnoses` object store. Records contain prediction metadata only; original crop images are not persisted. History can be viewed and cleared offline. Model session state is held in memory and the model itself is loaded from `public/models/`.
 
@@ -32,16 +34,28 @@ Install the app or visit required routes once while online so service-worker cac
 
 ## Machine-learning model
 
-The browser model is `public/models/vunalink-mobilenet-v2.onnx`, version `0.1.0`. It is a MobileNetV2 classifier trained using selected PlantVillage classes and executed with `onnxruntime-web`.
+The browser model is `public/models/vunalink-mobilenet-v2.onnx`, version `0.3.0` (8.9 MB). It is a MobileNetV2 classifier fine-tuned on PlantVillage tomato images plus about 450 PlantDoc field photos, and executed with `onnxruntime-web`.
 
 - Input: `224 × 224 × 3`, RGB, `float32`, NHWC.
-- Output: six `float32` softmax probabilities.
+- Output: four `float32` temperature-calibrated softmax probabilities.
+- Classes (in output order): tomato early blight, tomato late blight, tomato healthy, and tomato "other" (the seven other PlantVillage tomato diseases). "Other" has no treatment guidance; it always routes to an agent.
+- Unsure rule: if the top class is "other", or its probability is below **0.90**, the app shows "Ask an extension agent" instead of a diagnosis. The threshold is in `lib/ml/model.ts` and must match `public/models/model_metadata.json`; a test checks this.
 - Browser preprocessing: resize to 224 × 224, read RGB pixels, and pass raw values in NHWC order. The MobileNetV2 formula `(pixel / 127.5) - 1` is embedded in the graph and must not be applied again.
-- Classes: potato early blight, potato late blight, potato healthy, tomato early blight, tomato late blight, and tomato healthy.
 - Runtime: ONNX Runtime Web using local WebAssembly assets.
 - Metadata and mapping: `public/models/model_metadata.json` and `public/models/class_mapping.json`.
 
-Training and evaluation artifacts are under `ml/artifacts/`. PlantVillage evaluation does not represent accuracy on real Rwandan field images, so no production field-accuracy claim is made.
+### Results
+
+Measured on held-out photos that were never used for training:
+
+| | Lab photos (PlantVillage, 911) | Field photos (PlantDoc, 187) |
+|---|---|---|
+| Accuracy | 96.6% | 74.9% |
+| Macro F1 | 0.96 | 0.67 |
+| Answers that are right, at the 0.90 threshold | 99.3% | 80.6% |
+| "Other" routed to an agent | 99% | 96% |
+
+On the same field photos, the previous lab-only model (v0.2.0) scored 25.1% accuracy. Field photos are from PlantDoc (CC BY 4.0, Singh et al., 2020): web photos, not Rwandan farms, and from the same source as the field training photos, so they are an optimistic proxy. Independent validation on Rwandan farm photos is still required. Full details are in [`ml/README.md`](ml/README.md) and `ml/artifacts/`.
 
 ## Development
 
@@ -59,28 +73,31 @@ npx tsc --noEmit
 npm run build
 ```
 
-The separate ML workspace instructions are in [`ml/README.md`](ml/README.md).
+Model training runs on Kaggle with `ml/notebooks/kaggle_retrain_tomato.ipynb`. The ML workspace instructions, including how to ship a new model to the app, are in [`ml/README.md`](ml/README.md).
 
 ## Project structure
 
 ```text
 app/                  Next.js pages, layout, manifest, service-worker registration
 components/           Reusable UI, navigation, image picker, install prompt
-lib/ml/               Model loading, preprocessing, inference, labels, postprocessing
+lib/ml/               Model loading, preprocessing, inference, labels, postprocessing, unsure rule
 lib/history/          IndexedDB diagnosis history
 lib/image/            Shared image validation rules
-lib/localization/     Kinyarwanda disease information
+lib/localization/     Kinyarwanda and English disease information and "ask an agent" guidance
 lib/recommendations/  Offline agricultural guidance
 public/models/        ONNX model and metadata
 public/onnxruntime/   Local ONNX Runtime Web assets
-ml/                   Dataset preparation, training, evaluation, and export scripts
+ml/                   Dataset preparation, training, calibration, evaluation, and export scripts
+ml/notebooks/         Kaggle training notebook
 tests/                Critical application behavior tests
 ```
 
 ## Limitations
 
-- The model supports only the six potato and tomato classes above. It has no reliable unknown-crop class and can misclassify other crops or field conditions.
-- PlantVillage images are controlled compared with many real farm photographs. Independent Rwanda field validation is required.
+- Tomato only. The model knows tomato early blight, late blight, healthy leaves, and seven other PlantVillage tomato diseases (grouped as "other"). It can still confidently misclassify tomato diseases it has never seen; for example, a leaf that looks like powdery mildew was called late blight.
+- There is no dedicated "not a leaf" class. Photos of people, objects, or other plants usually land in "other" or "unsure" and are routed to an agent, but this is not guaranteed.
+- Field accuracy is measured on PlantDoc web photos, not Rwandan farms. Independent Rwanda field validation is required before any field-accuracy claim.
+- The new "ask an agent" texts and the testing notice in Kinyarwanda need review by a native speaker or agronomist.
 - Browser inference depends on WebAssembly support, available memory, device speed, and storage quota. Universal device compatibility is not claimed.
 - The PWA shell and model are designed for offline use after caching, but offline behavior still varies by browser and phone.
 - Recommendations are general knowledge-base guidance, not a confirmed diagnosis or a substitute for an agricultural extension worker. No pesticide dosage or chemical application rate is provided.
