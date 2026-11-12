@@ -76,7 +76,7 @@ const UNSURE_INFO: Readonly<Record<SupportedLanguage, Record<"other-disease" | "
     "other-disease": {
       title: "Baza umukozi w'ubujyanama mu buhinzi",
       explanation: "Iyi foto ntihuye n'indwara z'inyanya iyi porogaramu izi. Bishobora kuba ari indi ndwara, cyangwa atari igihingwa cy'inyanya. Ntukoreshe umuti utabanje kugisha inama.",
-      actions: ["Saba umukozi w'ubujyanama mu buhinzi kugenzura igihingwa.", "Mwereke iyi foto n'ibihingwa byafashwe.", "Kuraho ibice byangiritse cyane, ubishyire kure y'ibihingwa bizima."],
+      actions: ["Niba iyi foto atari iy'ibabi ry'inyanya, fata ifoto y'ibabi rimwe ry'inyanya, uri hafi.", "Saba umukozi w'ubujyanama mu buhinzi kugenzura igihingwa.", "Mwereke iyi foto n'ibihingwa byafashwe.", "Kuraho ibice byangiritse cyane, ubishyire kure y'ibihingwa bizima."],
     },
     "low-confidence": {
       title: "Porogaramu ntiyizeye neza: baza umukozi w'ubujyanama",
@@ -88,7 +88,7 @@ const UNSURE_INFO: Readonly<Record<SupportedLanguage, Record<"other-disease" | "
     "other-disease": {
       title: "Ask an extension agent",
       explanation: "This photo doesn't match the tomato problems this app knows. It may be another disease, or not a tomato plant. Do not use a chemical product before getting advice.",
-      actions: ["Ask an agricultural extension worker to check the plant.", "Show them this photo and the affected plants.", "Remove severely affected plant parts and keep them away from healthy crops."],
+      actions: ["If this isn't a tomato leaf, take a close-up photo of a single tomato leaf.", "Ask an agricultural extension worker to check the plant.", "Show them this photo and the affected plants.", "Remove severely affected plant parts and keep them away from healthy crops."],
     },
     "low-confidence": {
       title: "Not sure: ask an extension agent",
