@@ -37,16 +37,12 @@ const healthy = (diseaseId: string, crop: string): LocalizedDiseaseInfo => ({
 });
 
 export const DISEASE_INFO_RW: Readonly<Record<string, LocalizedDiseaseInfo>> = {
-  potato_early_blight: blight("potato_early_blight", "Ibibara by'amababi ku birayi (Early blight)", "ibirayi"),
-  potato_late_blight: blight("potato_late_blight", "Indwara ikwirakwira vuba ku birayi (Late blight)", "ibirayi"),
   tomato_early_blight: blight("tomato_early_blight", "Ibibara by'amababi ku nyanya (Early blight)", "inyanya"),
   tomato_late_blight: blight("tomato_late_blight", "Indwara ikwirakwira vuba ku nyanya (Late blight)", "inyanya"),
-  potato_healthy: healthy("potato_healthy", "ibirayi"),
   tomato_healthy: healthy("tomato_healthy", "inyanya"),
 };
 
 const englishNames: Readonly<Record<string, string>> = {
-  potato_early_blight: "Potato early blight", potato_late_blight: "Potato late blight", potato_healthy: "Potato appears healthy",
   tomato_early_blight: "Tomato early blight", tomato_late_blight: "Tomato late blight", tomato_healthy: "Tomato appears healthy",
 };
 
@@ -69,4 +65,39 @@ export function getDiseaseInfoRw(diseaseId: string): LocalizedDiseaseInfo {
     warning: "Ibi ni igitekerezo cy'ubwenge buhangano, si isuzuma ridashidikanywaho.",
     assistance: "Saba ubufasha bw'umukozi w'ubujyanama mu buhinzi niba ufite impungenge.",
   };
+}
+
+// Shown when the model routes a result to an extension agent instead of giving a diagnosis.
+// The Kinyarwanda text needs review by an agronomist / native speaker before the pilot.
+export type UnsureInfo = { title: string; explanation: string; actions: readonly string[] };
+
+const UNSURE_INFO: Readonly<Record<SupportedLanguage, Record<"other-disease" | "low-confidence", UnsureInfo>>> = {
+  rw: {
+    "other-disease": {
+      title: "Baza umukozi w'ubujyanama mu buhinzi",
+      explanation: "Iyi foto isa n'iyerekana ikindi kibazo cy'inyanya iyi porogaramu idatangaho inama. Ntukoreshe umuti utabanje kugisha inama.",
+      actions: ["Saba umukozi w'ubujyanama mu buhinzi kugenzura igihingwa.", "Mwereke iyi foto n'ibihingwa byafashwe.", "Kuraho ibice byangiritse cyane, ubishyire kure y'ibihingwa bizima."],
+    },
+    "low-confidence": {
+      title: "Porogaramu ntiyizeye neza: baza umukozi w'ubujyanama",
+      explanation: "Porogaramu ntiyashoboye kumenya neza icyo iyi foto yerekana, bityo nta suzuma itanga.",
+      actions: ["Fata indi foto y'ibabi rimwe, hafi, ahari urumuri ruhagije.", "Niba bikomeje, saba umukozi w'ubujyanama mu buhinzi kugenzura igihingwa."],
+    },
+  },
+  en: {
+    "other-disease": {
+      title: "Ask an extension agent",
+      explanation: "This photo looks like a different tomato problem that this app does not give advice for. Do not use a chemical product before getting advice.",
+      actions: ["Ask an agricultural extension worker to check the plant.", "Show them this photo and the affected plants.", "Remove severely affected plant parts and keep them away from healthy crops."],
+    },
+    "low-confidence": {
+      title: "Not sure: ask an extension agent",
+      explanation: "The app could not tell clearly what this photo shows, so it is not giving a diagnosis.",
+      actions: ["Take another photo of a single leaf, close up, in good light.", "If it still says unsure, ask an agricultural extension worker to check the plant."],
+    },
+  },
+};
+
+export function getUnsureInfo(reason: "other-disease" | "low-confidence", language: SupportedLanguage = "rw"): UnsureInfo {
+  return UNSURE_INFO[language][reason];
 }

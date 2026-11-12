@@ -1,16 +1,54 @@
 {
   "dataset": "plant_village",
-  "candidate_classes": [
-    "Corn_(maize)___Common_rust_",
-    "Corn_(maize)___Northern_Leaf_Blight",
-    "Corn_(maize)___healthy",
-    "Potato___Early_blight",
-    "Potato___Late_blight",
-    "Potato___healthy",
+  "crop": "tomato",
+  "target_classes": [
     "Tomato___Early_blight",
     "Tomato___Late_blight",
     "Tomato___healthy"
   ],
+  "other_class": {
+    "label": "Tomato___other",
+    "source_classes": [
+      "Tomato___Bacterial_spot",
+      "Tomato___Leaf_Mold",
+      "Tomato___Septoria_leaf_spot",
+      "Tomato___Spider_mites Two-spotted_spider_mite",
+      "Tomato___Target_Spot",
+      "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+      "Tomato___Tomato_mosaic_virus"
+    ],
+    "max_images": null,
+    "note": "max_images null means: match the median size of the target classes, sampled evenly across source classes."
+  },
+  "field_eval": {
+    "dataset": "PlantDoc",
+    "class_map": {
+      "Tomato Early blight leaf": "Tomato___Early_blight",
+      "Tomato leaf late blight": "Tomato___Late_blight",
+      "Tomato leaf": "Tomato___healthy",
+      "Tomato Septoria leaf spot": "Tomato___other",
+      "Tomato leaf bacterial spot": "Tomato___other",
+      "Tomato leaf mosaic virus": "Tomato___other",
+      "Tomato leaf yellow virus": "Tomato___other",
+      "Tomato mold leaf": "Tomato___other",
+      "Tomato two spotted spider mites leaf": "Tomato___other"
+    }
+  },
   "split": { "validation": 0.15, "test": 0.15, "seed": 42 },
-  "model": { "input_width": 224, "input_height": 224, "batch_size": 32, "epochs": 20, "fine_tune_epochs": 5, "learning_rate": 0.001 }
+  "model": {
+    "input_width": 224,
+    "input_height": 224,
+    "batch_size": 32,
+    "epochs": 15,
+    "learning_rate": 0.001,
+    "fine_tune_epochs": 10,
+    "fine_tune_layers": 40,
+    "fine_tune_learning_rate": 0.00001,
+    "early_stopping_patience": 4
+  },
+  "calibration": {
+    "target_answered_accuracy": 0.95,
+    "min_threshold": 0.7,
+    "note": "The unsure threshold is chosen on PlantVillage validation data and is optimistic for field photos. Re-check it against the field evaluation sweep."
+  }
 }
