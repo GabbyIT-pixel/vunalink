@@ -32,19 +32,30 @@
       "Tomato leaf yellow virus": "Tomato___other",
       "Tomato mold leaf": "Tomato___other",
       "Tomato two spotted spider mites leaf": "Tomato___other"
-    }
+    },
+    "split": {
+      "train": 0.6,
+      "validation": 0.15,
+      "test": 0.25
+    },
+    "train_repeat": 3,
+    "note": "All PlantDoc tomato images are pooled and split here. With --field-dir, field train/validation images are mixed into training (each train image repeated train_repeat times so field photos are not swamped by lab photos); field test is never trained on."
   },
-  "split": { "validation": 0.15, "test": 0.15, "seed": 42 },
+  "split": {
+    "validation": 0.15,
+    "test": 0.15,
+    "seed": 42
+  },
   "model": {
     "input_width": 224,
     "input_height": 224,
     "batch_size": 32,
-    "epochs": 15,
+    "epochs": 30,
     "learning_rate": 0.001,
-    "fine_tune_epochs": 10,
-    "fine_tune_layers": 40,
-    "fine_tune_learning_rate": 0.00001,
-    "early_stopping_patience": 4
+    "fine_tune_epochs": 30,
+    "fine_tune_layers": 60,
+    "fine_tune_learning_rate": 5e-05,
+    "early_stopping_patience": 5
   },
   "calibration": {
     "target_answered_accuracy": 0.95,

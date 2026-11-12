@@ -59,26 +59,42 @@ class_weight = {i: float(counts.sum() / (len(counts) * c)) for i, c in enumerate
 print("Train counts:", dict(zip(class_names, counts.tolist())), "class weights:", class_weight)
 
 # Augmentation aimed at phone photos in the field: framing, light and colour changes.
-augment = tf.keras.Sequential([
+augment_layers = [
     tf.keras.layers.RandomFlip("horizontal_and_vertical"),
     tf.keras.layers.RandomRotation(0.15),
     tf.keras.layers.RandomZoom((-0.2, 0.2)),
     tf.keras.layers.RandomTranslation(0.1, 0.1),
     tf.keras.layers.RandomBrightness(0.25, value_range=(0, 255)),
     tf.keras.layers.RandomContrast(0.3),
-], name="augmentation")
+]
+# Phone photos are often slightly blurred and differently coloured; newer Keras versions have layers for that.
+if hasattr(tf.keras.layers, "RandomSaturation"):
+    augment_layers.append(tf.keras.layers.RandomSaturation((0.35, 0.65), value_range=(0, 255)))  # 0.5 = unchanged
+if hasattr(tf.keras.layers, "RandomGaussianBlur"):
+    augment_layers.append(tf.keras.layers.RandomGaussianBlur(factor=0.5, kernel_size=3, value_range=(0, 255)))
+augment = tf.keras.Sequential(augment_layers, name="augmentation")
+print("Augmentation:", [layer.__class__.__name__ for layer in augment_layers])
 
 weights = None if args.weights.lower() == "none" else args.weights
 base = tf.keras.applications.MobileNetV2(input_shape=(*size, 3), include_top=False, weights=weights)
 base.trainable = False
+pool = tf.keras.layers.GlobalAveragePooling2D()
+dropout = tf.keras.layers.Dropout(0.2)
+classifier = tf.keras.layers.Dense(len(class_names), activation="softmax", name="classifier")
+
+
+def head(image):
+    x = tf.keras.applications.mobilenet_v2.preprocess_input(image)
+    x = base(x, training=False)  # keeps BatchNorm in inference mode during fine-tuning too
+    return classifier(dropout(pool(x)))
+
+
 inputs = tf.keras.Input(shape=(*size, 3), name="image")
-x = augment(inputs)
-x = tf.keras.applications.mobilenet_v2.preprocess_input(x)
-x = base(x, training=False)  # keeps BatchNorm in inference mode during fine-tuning too
-x = tf.keras.layers.GlobalAveragePooling2D()(x)
-x = tf.keras.layers.Dropout(0.2)(x)
-outputs = tf.keras.layers.Dense(len(class_names), activation="softmax", name="classifier")(x)
-model = tf.keras.Model(inputs, outputs)
+model = tf.keras.Model(inputs, head(augment(inputs)), name="vunalink_train")
+# Same layers and weights, without augmentation: this is what gets calibrated, saved and exported,
+# so the ONNX file contains no random ops.
+inference_inputs = tf.keras.Input(shape=(*size, 3), name="image")
+inference_model = tf.keras.Model(inference_inputs, head(inference_inputs), name="vunalink")
 
 
 def callbacks():
@@ -103,7 +119,7 @@ if mc["fine_tune_epochs"] > 0 and mc["fine_tune_layers"] > 0:
 
 print("Phase 3: temperature scaling on the validation split")
 valid_labels = np.concatenate([y.numpy() for _, y in valid])
-valid_probs = model.predict(valid, verbose=0)
+valid_probs = inference_model.predict(valid, verbose=0)
 log_probs = np.log(np.clip(valid_probs, 1e-12, 1.0))  # equal to the logits up to a per-row constant
 
 
@@ -119,10 +135,9 @@ temperature = float(grid[np.argmin([nll(t) for t in grid])])
 print(f"Temperature {temperature:.3f}: validation NLL {nll(1.0):.4f} -> {nll(temperature):.4f}")
 
 # Softmax(logits / T) == a Dense layer whose kernel and bias are divided by T.
-classifier = model.get_layer("classifier")
 kernel, bias = classifier.get_weights()
 classifier.set_weights([kernel / temperature, bias / temperature])
-calibrated_probs = model.predict(valid, verbose=0)
+calibrated_probs = inference_model.predict(valid, verbose=0)
 
 print("Phase 4: choosing the unsure threshold")
 predictions, confidence = calibrated_probs.argmax(axis=1), calibrated_probs.max(axis=1)
@@ -137,14 +152,14 @@ if threshold is None:
     print("Warning: target answered accuracy not reached on validation; using threshold 0.99.")
 print(f"Unsure threshold: {threshold}")
 
-model.save(output / "model.keras")
-model.export(output / "saved_model")
+inference_model.save(output / "model.keras")
+inference_model.export(output / "saved_model")
 
 mapping = {"classes": [{"class_id": i, "dataset_label": label, "disease_id": disease_id(label)} for i, label in enumerate(class_names)]}
 (output / "class_mapping.json").write_text(json.dumps(mapping, indent=2) + "\n")
 
 print("Phase 5: evaluating on the held-out PlantVillage test split")
-evaluation = evaluate_model(model, os.path.join(args.data_dir, "test"), class_names, other_label, size, mc["batch_size"], threshold, "PlantVillage", output / "evaluation.json")
+evaluation = evaluate_model(inference_model, os.path.join(args.data_dir, "test"), class_names, other_label, size, mc["batch_size"], threshold, "PlantVillage", output / "evaluation.json")
 print(json.dumps({"metrics": evaluation["metrics"], "unsure_routing": evaluation["unsure_routing"]}, indent=2))
 
 

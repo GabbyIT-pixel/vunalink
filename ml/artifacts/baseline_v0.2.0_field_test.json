@@ -1,0 +1,166 @@
+{
+  "dataset": "PlantDoc field test (v0.3 split)",
+  "image_count": 187,
+  "metrics": {
+    "accuracy": 0.25133689839572193,
+    "precision_macro": 0.2980346947738252,
+    "recall_macro": 0.3087367178276269,
+    "f1_macro": 0.19232009125626146
+  },
+  "per_class": [
+    {
+      "class_id": 0,
+      "label": "Tomato___Early_blight",
+      "precision": 0.1111111111111111,
+      "recall": 0.36363636363636365,
+      "f1": 0.1702127659574468,
+      "support": 22
+    },
+    {
+      "class_id": 1,
+      "label": "Tomato___Late_blight",
+      "precision": 0.21739130434782608,
+      "recall": 0.7142857142857143,
+      "f1": 0.3333333333333333,
+      "support": 28
+    },
+    {
+      "class_id": 2,
+      "label": "Tomato___healthy",
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 16
+    },
+    {
+      "class_id": 3,
+      "label": "Tomato___other",
+      "precision": 0.8636363636363636,
+      "recall": 0.15702479338842976,
+      "f1": 0.26573426573426573,
+      "support": 121
+    }
+  ],
+  "confusion_matrix": [
+    [
+      8,
+      13,
+      0,
+      1
+    ],
+    [
+      8,
+      20,
+      0,
+      0
+    ],
+    [
+      2,
+      12,
+      0,
+      2
+    ],
+    [
+      54,
+      47,
+      1,
+      19
+    ]
+  ],
+  "poorest_by_f1": [
+    "Tomato___healthy",
+    "Tomato___Early_blight",
+    "Tomato___other",
+    "Tomato___Late_blight"
+  ],
+  "unsure_routing": {
+    "threshold": 0.74,
+    "answered_share": 0.5935828877005348,
+    "answered_accuracy": 0.18018018018018017,
+    "routed_to_agent_share": 0.40641711229946526,
+    "other_routed_to_agent": 0.4462809917355372,
+    "supported_wrongly_answered": 91
+  },
+  "threshold_sweep": [
+    {
+      "threshold": 0.5,
+      "answered_share": 0.8342245989304813,
+      "answered_accuracy": 0.17307692307692307,
+      "routed_to_agent_share": 0.1657754010695187,
+      "other_routed_to_agent": 0.21487603305785125,
+      "supported_wrongly_answered": 129
+    },
+    {
+      "threshold": 0.55,
+      "answered_share": 0.8074866310160428,
+      "answered_accuracy": 0.17880794701986755,
+      "routed_to_agent_share": 0.1925133689839572,
+      "other_routed_to_agent": 0.2396694214876033,
+      "supported_wrongly_answered": 124
+    },
+    {
+      "threshold": 0.6,
+      "answered_share": 0.7433155080213903,
+      "answered_accuracy": 0.18705035971223022,
+      "routed_to_agent_share": 0.25668449197860965,
+      "other_routed_to_agent": 0.3140495867768595,
+      "supported_wrongly_answered": 113
+    },
+    {
+      "threshold": 0.65,
+      "answered_share": 0.6737967914438503,
+      "answered_accuracy": 0.19047619047619047,
+      "routed_to_agent_share": 0.32620320855614976,
+      "other_routed_to_agent": 0.371900826446281,
+      "supported_wrongly_answered": 102
+    },
+    {
+      "threshold": 0.7,
+      "answered_share": 0.6417112299465241,
+      "answered_accuracy": 0.19166666666666668,
+      "routed_to_agent_share": 0.3582887700534759,
+      "other_routed_to_agent": 0.4132231404958678,
+      "supported_wrongly_answered": 97
+    },
+    {
+      "threshold": 0.75,
+      "answered_share": 0.5775401069518716,
+      "answered_accuracy": 0.18518518518518517,
+      "routed_to_agent_share": 0.42245989304812837,
+      "other_routed_to_agent": 0.47107438016528924,
+      "supported_wrongly_answered": 88
+    },
+    {
+      "threshold": 0.8,
+      "answered_share": 0.48663101604278075,
+      "answered_accuracy": 0.2087912087912088,
+      "routed_to_agent_share": 0.5133689839572193,
+      "other_routed_to_agent": 0.5537190082644629,
+      "supported_wrongly_answered": 72
+    },
+    {
+      "threshold": 0.85,
+      "answered_share": 0.40641711229946526,
+      "answered_accuracy": 0.2236842105263158,
+      "routed_to_agent_share": 0.5935828877005348,
+      "other_routed_to_agent": 0.628099173553719,
+      "supported_wrongly_answered": 59
+    },
+    {
+      "threshold": 0.9,
+      "answered_share": 0.35294117647058826,
+      "answered_accuracy": 0.21212121212121213,
+      "routed_to_agent_share": 0.6470588235294118,
+      "other_routed_to_agent": 0.6694214876033058,
+      "supported_wrongly_answered": 52
+    },
+    {
+      "threshold": 0.95,
+      "answered_share": 0.2620320855614973,
+      "answered_accuracy": 0.24489795918367346,
+      "routed_to_agent_share": 0.7379679144385026,
+      "other_routed_to_agent": 0.7603305785123967,
+      "supported_wrongly_answered": 37
+    }
+  ]
+}

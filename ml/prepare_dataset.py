@@ -4,6 +4,10 @@ The "other" class is sampled from the remaining PlantVillage tomato diseases so 
 model can say "this is a tomato problem I don't give advice for" instead of forcing one
 of the three supported diagnoses. Exact-duplicate images are removed before splitting,
 so no image can appear in both train and test.
+
+With --field-dir, field photos (PlantDoc train/validation from prepare_field_eval.py) are
+added to the train and validation splits. The test split stays PlantVillage-only, so the
+lab test number remains comparable between versions.
 """
 import argparse
 import hashlib
@@ -22,6 +26,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--source-dir", required=True, help="Folder containing PlantVillage class folders (searched recursively)")
 parser.add_argument("--output-dir", required=True)
 parser.add_argument("--config", default=str(Path(__file__).with_name("class_config.json")))
+parser.add_argument("--field-dir", help="Optional output of prepare_field_eval.py: its train/ and validation/ images are mixed in")
 args = parser.parse_args()
 
 config = load_config(args.config)
@@ -111,6 +116,21 @@ for split, rows in {"train": train_rows, "validation": valid_rows, "test": test_
         "by_label": dict(sorted(Counter(r["label"] for r in rows).items())),
         "other_by_source": dict(sorted(Counter(r["source_class"] for r in rows if r["label"] == other["label"]).items())),
     }
+
+if args.field_dir:
+    # Field photos join train and validation only; field/test stays untouched for evaluation.
+    repeat = config["field_eval"].get("train_repeat", 1)
+    added = {}
+    for split, copies in {"train": repeat, "validation": 1}.items():
+        count = Counter()
+        for label in classes:
+            source_dir = Path(args.field_dir) / split / label
+            for path in image_files(source_dir) if source_dir.exists() else []:
+                for k in range(copies):
+                    shutil.copy2(path, output / split / label / (f"{path.stem}_r{k}{path.suffix}" if copies > 1 else path.name))
+                count[label] += 1
+        added[split] = dict(sorted(count.items()))
+    manifest["field_images_added"] = {"source": args.field_dir, "train_repeat": repeat, "unique_images": added}
 
 mapping = {"classes": [{"class_id": i, "dataset_label": label, "disease_id": disease_id(label)} for i, label in enumerate(classes)]}
 (output / "class_mapping.json").write_text(json.dumps(mapping, indent=2) + "\n")
