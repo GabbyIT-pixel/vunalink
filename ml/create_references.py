@@ -34,7 +34,7 @@ for class_id, label in enumerate(metadata["classes"]):
     if not files:
         continue
     path = files[int(rng.integers(len(files)))]
-    array = tf.keras.utils.img_to_array(tf.keras.utils.load_img(path, target_size=size))
+    array = tf.keras.utils.img_to_array(tf.keras.utils.load_img(path, target_size=size, interpolation="bilinear"))
     scores = model.predict(np.expand_dims(array, 0), verbose=0)[0]
     target = output / f"reference_{len(rows):03d}{path.suffix.lower()}"
     shutil.copy2(path, target)

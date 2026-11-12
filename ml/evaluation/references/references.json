@@ -1,97 +1,57 @@
 {
-  "model": "ml/artifacts/model.keras",
+  "model": "/kaggle/working/artifacts/model.keras",
+  "model_version": "0.2.0",
   "seed": 42,
   "images": [
     {
       "image": "reference_000.jpg",
-      "source_class": "Potato___Early_blight",
-      "expectedClass": "Potato___Early_blight",
+      "expectedClass": "Tomato___Early_blight",
       "expectedClassId": 0,
       "referencePredictionClassId": 0,
       "referenceScores": [
-        0.9999997615814209,
-        8.934924267123279e-08,
-        2.4344916707552677e-11,
-        1.3366938844683318e-07,
-        1.0035611452963167e-08,
-        1.7612759861673766e-10
+        0.8622530102729797,
+        0.02424010820686817,
+        0.0005155149265192449,
+        0.11299128830432892
       ]
     },
     {
       "image": "reference_001.jpg",
-      "source_class": "Potato___Late_blight",
-      "expectedClass": "Potato___Late_blight",
+      "expectedClass": "Tomato___Late_blight",
       "expectedClassId": 1,
       "referencePredictionClassId": 1,
       "referenceScores": [
-        1.3293005167724914e-06,
-        0.9907082319259644,
-        2.7098792998003773e-05,
-        7.166652267187601e-06,
-        0.009154608473181725,
-        0.00010159561497857794
+        5.084688018541783e-05,
+        0.9994301199913025,
+        2.4970679746161295e-08,
+        0.0005189673975110054
       ]
     },
     {
       "image": "reference_002.jpg",
-      "source_class": "Potato___healthy",
-      "expectedClass": "Potato___healthy",
+      "expectedClass": "Tomato___healthy",
       "expectedClassId": 2,
       "referencePredictionClassId": 2,
       "referenceScores": [
-        0.001596991904079914,
-        0.20415183901786804,
-        0.793883204460144,
-        7.67616347729927e-06,
-        4.730250293505378e-05,
-        0.0003129381802864373
+        3.6141811765588727e-10,
+        3.0898510772203736e-07,
+        0.9999926090240479,
+        7.013092272245558e-06
       ]
     },
     {
       "image": "reference_003.jpg",
-      "source_class": "Tomato___Early_blight",
-      "expectedClass": "Tomato___Early_blight",
+      "expectedClass": "Tomato___other",
       "expectedClassId": 3,
-      "referencePredictionClassId": 3,
+      "referencePredictionClassId": 2,
       "referenceScores": [
-        0.018586819991469383,
-        0.011717865243554115,
-        1.103198155760765e-05,
-        0.9656486511230469,
-        0.002320078667253256,
-        0.0017156413523480296
-      ]
-    },
-    {
-      "image": "reference_004.jpg",
-      "source_class": "Tomato___Late_blight",
-      "expectedClass": "Tomato___Late_blight",
-      "expectedClassId": 4,
-      "referencePredictionClassId": 4,
-      "referenceScores": [
-        7.929166656595044e-08,
-        0.0003088017110712826,
-        4.782318683282938e-07,
-        0.0007056471658870578,
-        0.9989144802093506,
-        7.046636892482638e-05
-      ]
-    },
-    {
-      "image": "reference_005.jpg",
-      "source_class": "Tomato___healthy",
-      "expectedClass": "Tomato___healthy",
-      "expectedClassId": 5,
-      "referencePredictionClassId": 5,
-      "referenceScores": [
-        8.17301296085482e-11,
-        2.0120169974546798e-09,
-        7.942794155724187e-08,
-        1.0881970524678763e-07,
-        8.602040857397242e-09,
-        0.9999997615814209
+        0.002930784597992897,
+        0.0003251883899793029,
+        0.572335958480835,
+        0.42440810799598694
       ]
     }
   ],
-  "note": "Generated from the trained model; not a substitute for field validation."
+  "note": "Generated from the trained model; not a substitute for field validation.",
+  "resize": "bilinear, as in training"
 }

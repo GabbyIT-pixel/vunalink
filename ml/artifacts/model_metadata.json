@@ -1,47 +1,81 @@
 {
-  "name": "VunaLink MobileNetV2",
-  "version": "0.1.0",
-  "format": "saved_model",
+  "name": "VunaLink MobileNetV2 (tomato)",
+  "version": "0.2.0",
+  "created_at": "2026-11-12T14:47:58+00:00",
+  "format": "keras",
   "dataset": "PlantVillage",
-  "class_count": 6,
+  "crop": "tomato",
+  "class_count": 4,
+  "classes": [
+    "Tomato___Early_blight",
+    "Tomato___Late_blight",
+    "Tomato___healthy",
+    "Tomato___other"
+  ],
+  "other_class": "Tomato___other",
+  "class_mapping": "class_mapping.json",
   "input": {
     "width": 224,
     "height": 224,
     "channels": 3,
     "dtype": "float32",
     "color_format": "RGB",
-    "tensor_layout": "NHWC"
+    "tensor_layout": "NHWC",
+    "value_range": "0-255"
   },
   "preprocessing": {
-    "resize": "image_dataset_from_directory target size",
     "scaling": "mobilenet_v2.preprocess_input",
     "formula": "(pixel / 127.5) - 1",
-    "channel_order": "RGB"
+    "applied_in_model": true
   },
   "output": {
     "shape": [
       null,
-      6
+      4
     ],
     "dtype": "float32",
-    "semantics": "softmax class probabilities"
+    "semantics": "temperature-calibrated softmax class probabilities"
   },
-  "class_mapping": "class_mapping.json",
-  "classes": [
-    "Potato___Early_blight",
-    "Potato___Late_blight",
-    "Potato___healthy",
-    "Tomato___Early_blight",
-    "Tomato___Late_blight",
-    "Tomato___healthy"
-  ],
+  "calibration": {
+    "method": "temperature scaling on validation split, folded into the classifier layer",
+    "temperature": 1.149333380149978,
+    "unsure_threshold": 0.74,
+    "unsure_rule": "ask an agent if the top class is 'Tomato___other' or its probability is below unsure_threshold",
+    "target_answered_accuracy": 0.95,
+    "note": "The unsure threshold is chosen on PlantVillage validation data and is optimistic for field photos. Re-check it against the field evaluation sweep."
+  },
   "training": {
     "input_width": 224,
     "input_height": 224,
     "batch_size": 32,
-    "epochs": 20,
-    "fine_tune_epochs": 5,
-    "learning_rate": 0.001
-  },
-  "best_checkpoint": "best_model.keras"
+    "epochs": 15,
+    "learning_rate": 0.001,
+    "fine_tune_epochs": 10,
+    "fine_tune_layers": 40,
+    "fine_tune_learning_rate": 1e-05,
+    "early_stopping_patience": 4,
+    "weights": "imagenet",
+    "train_counts": {
+      "Tomato___Early_blight": 700,
+      "Tomato___Late_blight": 1331,
+      "Tomato___healthy": 1109,
+      "Tomato___other": 1109
+    },
+    "class_weight": {
+      "Tomato___Early_blight": 1.5175,
+      "Tomato___Late_blight": 0.7980841472577009,
+      "Tomato___healthy": 0.9578449053201082,
+      "Tomato___other": 0.9578449053201082
+    },
+    "head": {
+      "epochs_run": 15,
+      "best_val_loss": 0.35608261823654175,
+      "best_val_accuracy": 0.8781558871269226
+    },
+    "fine_tune": {
+      "epochs_run": 10,
+      "best_val_loss": 0.22135476768016815,
+      "best_val_accuracy": 0.9231613874435425
+    }
+  }
 }

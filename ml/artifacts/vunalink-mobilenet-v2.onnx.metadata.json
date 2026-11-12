@@ -2,26 +2,30 @@
   "format": "onnx",
   "onnx_version": "opset-13",
   "input": {
+    "name": "input",
     "shape": [
       null,
       224,
       224,
       3
     ],
-    "dtype": "float32"
+    "dtype": "float32",
+    "value_range": "0-255"
   },
   "output": {
     "shape": [
       null,
-      6
+      4
     ],
     "dtype": "float32"
   },
-  "preprocessing": "MobileNetV2 preprocess_input: (pixel / 127.5) - 1",
-  "source_model": "ml/artifacts/model.keras",
+  "preprocessing": "Applied inside the model: (pixel / 127.5) - 1",
+  "source_model": "/kaggle/working/artifacts/model.keras",
+  "size_mb": 8.93,
   "verification": {
-    "method": "fixed random tensor compared with Keras model",
-    "max_absolute_difference": 1.1920928955078125e-07,
+    "method": "64 real images compared with the Keras model",
+    "max_absolute_difference": 4.112720489501953e-06,
+    "same_top_class": true,
     "passed": true
   }
 }

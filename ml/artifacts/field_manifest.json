@@ -1,0 +1,21 @@
+{
+  "dataset": "PlantDoc",
+  "by_label": {
+    "Tomato___Early_blight": 88,
+    "Tomato___Late_blight": 111,
+    "Tomato___healthy": 63,
+    "Tomato___other": 481
+  },
+  "by_source": {
+    "Tomato Early blight leaf": 88,
+    "Tomato Septoria leaf spot": 150,
+    "Tomato leaf": 63,
+    "Tomato leaf bacterial spot": 109,
+    "Tomato leaf late blight": 111,
+    "Tomato leaf mosaic virus": 54,
+    "Tomato leaf yellow virus": 75,
+    "Tomato mold leaf": 91,
+    "Tomato two spotted spider mites leaf": 2
+  },
+  "unreadable_skipped": 0
+}

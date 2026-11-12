@@ -1,118 +1,167 @@
 {
   "dataset": "PlantVillage",
+  "image_count": 911,
   "metrics": {
-    "accuracy": 0.961,
-    "precision_macro": 0.9559297323017426,
-    "recall_macro": 0.9631431155885196,
-    "f1_macro": 0.9592487542139656
+    "accuracy": 0.9176728869374314,
+    "precision_macro": 0.916660898924347,
+    "recall_macro": 0.9039237800383311,
+    "f1_macro": 0.9084895565959854
   },
   "per_class": [
     {
       "class_id": 0,
-      "label": "Potato___Early_blight",
-      "precision": 0.9867549668874173,
-      "recall": 0.9933333333333333,
-      "f1": 0.9900332225913622,
+      "label": "Tomato___Early_blight",
+      "precision": 0.921875,
+      "recall": 0.7866666666666666,
+      "f1": 0.8489208633093526,
       "support": 150
     },
     {
       "class_id": 1,
-      "label": "Potato___Late_blight",
-      "precision": 0.922077922077922,
-      "recall": 0.9861111111111112,
-      "f1": 0.9530201342281879,
-      "support": 144
+      "label": "Tomato___Late_blight",
+      "precision": 0.9508771929824561,
+      "recall": 0.9508771929824561,
+      "f1": 0.9508771929824561,
+      "support": 285
     },
     {
       "class_id": 2,
-      "label": "Potato___healthy",
-      "precision": 0.9629629629629629,
-      "recall": 0.9629629629629629,
-      "f1": 0.9629629629629629,
-      "support": 27
+      "label": "Tomato___healthy",
+      "precision": 0.9115384615384615,
+      "recall": 0.9957983193277311,
+      "f1": 0.9518072289156626,
+      "support": 238
     },
     {
       "class_id": 3,
-      "label": "Tomato___Early_blight",
-      "precision": 0.8926174496644296,
-      "recall": 0.910958904109589,
-      "f1": 0.9016949152542373,
-      "support": 146
-    },
-    {
-      "class_id": 4,
-      "label": "Tomato___Late_blight",
-      "precision": 0.9754385964912281,
-      "recall": 0.9297658862876255,
-      "f1": 0.952054794520548,
-      "support": 299
-    },
-    {
-      "class_id": 5,
-      "label": "Tomato___healthy",
-      "precision": 0.9957264957264957,
-      "recall": 0.9957264957264957,
-      "f1": 0.9957264957264957,
-      "support": 234
+      "label": "Tomato___other",
+      "precision": 0.8823529411764706,
+      "recall": 0.8823529411764706,
+      "f1": 0.8823529411764706,
+      "support": 238
     }
   ],
   "confusion_matrix": [
     [
-      149,
-      1,
-      0,
-      0,
-      0,
-      0
-    ],
-    [
-      0,
-      142,
-      1,
-      0,
-      1,
-      0
-    ],
-    [
-      0,
-      1,
-      26,
-      0,
-      0,
-      0
+      118,
+      13,
+      2,
+      17
     ],
     [
       2,
-      5,
-      0,
-      133,
-      6,
-      0
+      271,
+      2,
+      10
     ],
     [
       0,
-      5,
       0,
-      15,
-      278,
+      237,
       1
     ],
     [
-      0,
-      0,
-      0,
+      8,
       1,
-      0,
-      233
+      19,
+      210
     ]
   ],
   "poorest_by_f1": [
     "Tomato___Early_blight",
+    "Tomato___other",
     "Tomato___Late_blight",
-    "Potato___Late_blight",
-    "Potato___healthy",
-    "Potato___Early_blight",
     "Tomato___healthy"
   ],
-  "note": "PlantVillage test metrics are not representative of real-world Rwanda field accuracy."
+  "unsure_routing": {
+    "threshold": 0.74,
+    "answered_share": 0.6608122941822173,
+    "answered_accuracy": 0.9634551495016611,
+    "routed_to_agent_share": 0.3391877058177827,
+    "other_routed_to_agent": 0.9453781512605042,
+    "supported_wrongly_answered": 22
+  },
+  "threshold_sweep": [
+    {
+      "threshold": 0.5,
+      "answered_share": 0.7277716794731065,
+      "answered_accuracy": 0.9396681749622926,
+      "routed_to_agent_share": 0.2722283205268935,
+      "other_routed_to_agent": 0.8949579831932774,
+      "supported_wrongly_answered": 40
+    },
+    {
+      "threshold": 0.55,
+      "answered_share": 0.7189901207464325,
+      "answered_accuracy": 0.9450381679389313,
+      "routed_to_agent_share": 0.2810098792535675,
+      "other_routed_to_agent": 0.907563025210084,
+      "supported_wrongly_answered": 36
+    },
+    {
+      "threshold": 0.6,
+      "answered_share": 0.7069154774972558,
+      "answered_accuracy": 0.9503105590062112,
+      "routed_to_agent_share": 0.29308452250274425,
+      "other_routed_to_agent": 0.9201680672268907,
+      "supported_wrongly_answered": 32
+    },
+    {
+      "threshold": 0.65,
+      "answered_share": 0.6937431394072447,
+      "answered_accuracy": 0.9541139240506329,
+      "routed_to_agent_share": 0.3062568605927552,
+      "other_routed_to_agent": 0.9243697478991597,
+      "supported_wrongly_answered": 29
+    },
+    {
+      "threshold": 0.7,
+      "answered_share": 0.6783754116355654,
+      "answered_accuracy": 0.9563106796116505,
+      "routed_to_agent_share": 0.3216245883644347,
+      "other_routed_to_agent": 0.9327731092436975,
+      "supported_wrongly_answered": 27
+    },
+    {
+      "threshold": 0.75,
+      "answered_share": 0.6553238199780461,
+      "answered_accuracy": 0.9681742043551089,
+      "routed_to_agent_share": 0.3446761800219539,
+      "other_routed_to_agent": 0.9537815126050421,
+      "supported_wrongly_answered": 19
+    },
+    {
+      "threshold": 0.8,
+      "answered_share": 0.6388583973655324,
+      "answered_accuracy": 0.9759450171821306,
+      "routed_to_agent_share": 0.3611416026344676,
+      "other_routed_to_agent": 0.9621848739495799,
+      "supported_wrongly_answered": 14
+    },
+    {
+      "threshold": 0.85,
+      "answered_share": 0.6125137211855104,
+      "answered_accuracy": 0.9802867383512545,
+      "routed_to_agent_share": 0.38748627881448955,
+      "other_routed_to_agent": 0.9705882352941176,
+      "supported_wrongly_answered": 11
+    },
+    {
+      "threshold": 0.9,
+      "answered_share": 0.5729967069154775,
+      "answered_accuracy": 0.9865900383141762,
+      "routed_to_agent_share": 0.4270032930845225,
+      "other_routed_to_agent": 0.9789915966386554,
+      "supported_wrongly_answered": 7
+    },
+    {
+      "threshold": 0.95,
+      "answered_share": 0.5290889132821076,
+      "answered_accuracy": 0.9896265560165975,
+      "routed_to_agent_share": 0.47091108671789245,
+      "other_routed_to_agent": 0.9831932773109243,
+      "supported_wrongly_answered": 5
+    }
+  ],
+  "note": "PlantVillage test metrics are lab images and do not represent Rwanda field accuracy."
 }

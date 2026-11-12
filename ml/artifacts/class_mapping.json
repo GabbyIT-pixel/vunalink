@@ -2,33 +2,23 @@
   "classes": [
     {
       "class_id": 0,
-      "dataset_label": "Potato___Early_blight",
-      "disease_id": "potato_early_blight"
-    },
-    {
-      "class_id": 1,
-      "dataset_label": "Potato___Late_blight",
-      "disease_id": "potato_late_blight"
-    },
-    {
-      "class_id": 2,
-      "dataset_label": "Potato___healthy",
-      "disease_id": "potato_healthy"
-    },
-    {
-      "class_id": 3,
       "dataset_label": "Tomato___Early_blight",
       "disease_id": "tomato_early_blight"
     },
     {
-      "class_id": 4,
+      "class_id": 1,
       "dataset_label": "Tomato___Late_blight",
       "disease_id": "tomato_late_blight"
     },
     {
-      "class_id": 5,
+      "class_id": 2,
       "dataset_label": "Tomato___healthy",
       "disease_id": "tomato_healthy"
+    },
+    {
+      "class_id": 3,
+      "dataset_label": "Tomato___other",
+      "disease_id": "tomato_other"
     }
   ]
 }
