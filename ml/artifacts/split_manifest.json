@@ -58,5 +58,23 @@
       }
     }
   },
+  "field_images_added": {
+    "source": "/kaggle/working/field",
+    "train_repeat": 3,
+    "unique_images": {
+      "train": {
+        "Tomato___Early_blight": 53,
+        "Tomato___Late_blight": 66,
+        "Tomato___healthy": 38,
+        "Tomato___other": 288
+      },
+      "validation": {
+        "Tomato___Early_blight": 13,
+        "Tomato___Late_blight": 17,
+        "Tomato___healthy": 9,
+        "Tomato___other": 72
+      }
+    }
+  },
   "removed_cross_label_duplicates": 0
 }

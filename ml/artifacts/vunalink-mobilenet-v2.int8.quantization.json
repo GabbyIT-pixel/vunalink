@@ -1,8 +1,8 @@
 {
   "float_size_mb": 8.93,
   "int8_size_mb": 2.65,
-  "test_images": 743,
-  "float_accuracy": 0.29878869448183043,
-  "int8_accuracy": 0.30955585464333785,
-  "top_class_agreement": 0.8586810228802153
+  "test_images": 187,
+  "float_accuracy": 0.7486631016042781,
+  "int8_accuracy": 0.7433155080213903,
+  "top_class_agreement": 0.9090909090909091
 }

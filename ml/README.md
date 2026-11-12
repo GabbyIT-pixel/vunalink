@@ -60,6 +60,28 @@ train/val folders, which are pooled and re-split) and PlantDoc all work. Graysca
 segmented PlantVillage variants are skipped. Don't point them at augmented copies of
 PlantVillage: near-duplicate images would leak between train and test.
 
+## Current model: v0.3.0
+
+Trained on PlantVillage plus ~450 PlantDoc field photos. Measured on 911 held-out lab photos and
+187 held-out PlantDoc field photos (never trained on):
+
+| | Lab (PlantVillage) | Field (PlantDoc) | Field, v0.2.0 (lab-only training) |
+|---|---|---|---|
+| Accuracy | 96.6% | 74.9% | 25.1% |
+| Macro F1 | 0.96 | 0.67 | 0.19 |
+| Early / late blight / healthy F1 | 0.93 / 0.98 / 0.99 | 0.58 / 0.69 / 0.57 | 0.17 / 0.33 / 0.00 |
+| "Other" routed to an agent (at 0.90) | 99% | 96% | 45% (at 0.74) |
+| Answers right, at the unsure threshold | 99.3% | 80.6% (6 wrong) | 18% (91 wrong) |
+| Photos answered directly | 66% | 17% | 59% |
+
+The unsure threshold is **0.90**. Training picked 0.70 from mostly-lab validation photos; on the
+111 field validation photos, wrong answers fell from 7 to 3 between 0.70 and 0.90 (the field test
+sweep agreed: 15 to 6). Since 65% of the field test photos are "other", which should go to an
+agent, 17% answered means about half of the supported-disease photos get a direct answer.
+
+Field numbers are from PlantDoc (web photos, small test set, same source as the field training
+photos), so they are an optimistic proxy for Rwandan farms, not a substitute for local testing.
+
 ## Field photos (PlantDoc)
 
 `prepare_field_eval.py` pools all PlantDoc tomato images (its own test folder has only

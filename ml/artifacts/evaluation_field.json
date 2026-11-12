@@ -1,166 +1,166 @@
 {
   "dataset": "PlantDoc",
-  "image_count": 743,
+  "image_count": 187,
   "metrics": {
-    "accuracy": 0.29878869448183043,
-    "precision_macro": 0.3476590293378804,
-    "recall_macro": 0.3832975395475395,
-    "f1_macro": 0.2410212866183058
+    "accuracy": 0.7486631016042781,
+    "precision_macro": 0.6623343527013251,
+    "recall_macro": 0.6881641086186541,
+    "f1_macro": 0.6654846512183469
   },
   "per_class": [
     {
       "class_id": 0,
       "label": "Tomato___Early_blight",
-      "precision": 0.16279069767441862,
-      "recall": 0.5568181818181818,
-      "f1": 0.2519280205655527,
-      "support": 88
+      "precision": 0.5,
+      "recall": 0.6818181818181818,
+      "f1": 0.5769230769230769,
+      "support": 22
     },
     {
       "class_id": 1,
       "label": "Tomato___Late_blight",
-      "precision": 0.26126126126126126,
-      "recall": 0.7837837837837838,
-      "f1": 0.3918918918918919,
-      "support": 111
+      "precision": 0.6111111111111112,
+      "recall": 0.7857142857142857,
+      "f1": 0.6875,
+      "support": 28
     },
     {
       "class_id": 2,
       "label": "Tomato___healthy",
-      "precision": 0.125,
-      "recall": 0.015873015873015872,
-      "f1": 0.028169014084507043,
-      "support": 63
+      "precision": 0.6666666666666666,
+      "recall": 0.5,
+      "f1": 0.5714285714285714,
+      "support": 16
     },
     {
       "class_id": 3,
       "label": "Tomato___other",
-      "precision": 0.8415841584158416,
-      "recall": 0.17671517671517672,
-      "f1": 0.2920962199312715,
-      "support": 481
+      "precision": 0.8715596330275229,
+      "recall": 0.7851239669421488,
+      "f1": 0.8260869565217391,
+      "support": 121
     }
   ],
   "confusion_matrix": [
     [
-      49,
-      33,
+      15,
+      1,
       0,
       6
     ],
     [
+      3,
       22,
-      87,
       0,
-      2
+      3
     ],
     [
-      12,
-      42,
       1,
-      8
+      2,
+      8,
+      5
     ],
     [
-      218,
-      171,
-      7,
-      85
+      11,
+      11,
+      4,
+      95
     ]
   ],
   "poorest_by_f1": [
     "Tomato___healthy",
     "Tomato___Early_blight",
-    "Tomato___other",
-    "Tomato___Late_blight"
+    "Tomato___Late_blight",
+    "Tomato___other"
   ],
   "unsure_routing": {
-    "threshold": 0.74,
-    "answered_share": 0.5733512786002691,
-    "answered_accuracy": 0.24178403755868544,
-    "routed_to_agent_share": 0.4266487213997308,
-    "other_routed_to_agent": 0.4760914760914761,
-    "supported_wrongly_answered": 323
+    "threshold": 0.9,
+    "answered_share": 0.1657754010695187,
+    "answered_accuracy": 0.8064516129032258,
+    "routed_to_agent_share": 0.8342245989304813,
+    "other_routed_to_agent": 0.9586776859504132,
+    "supported_wrongly_answered": 6
   },
   "threshold_sweep": [
     {
       "threshold": 0.5,
-      "answered_share": 0.800807537012113,
-      "answered_accuracy": 0.2218487394957983,
-      "routed_to_agent_share": 0.19919246298788695,
-      "other_routed_to_agent": 0.2515592515592516,
-      "supported_wrongly_answered": 463
+      "answered_share": 0.39572192513368987,
+      "answered_accuracy": 0.581081081081081,
+      "routed_to_agent_share": 0.6042780748663101,
+      "other_routed_to_agent": 0.7933884297520661,
+      "supported_wrongly_answered": 31
     },
     {
       "threshold": 0.55,
-      "answered_share": 0.756393001345895,
-      "answered_accuracy": 0.2277580071174377,
-      "routed_to_agent_share": 0.24360699865410498,
-      "other_routed_to_agent": 0.30145530145530147,
-      "supported_wrongly_answered": 434
+      "answered_share": 0.3689839572192513,
+      "answered_accuracy": 0.6231884057971014,
+      "routed_to_agent_share": 0.6310160427807486,
+      "other_routed_to_agent": 0.8347107438016529,
+      "supported_wrongly_answered": 26
     },
     {
       "threshold": 0.6,
-      "answered_share": 0.7173620457604307,
-      "answered_accuracy": 0.23076923076923078,
-      "routed_to_agent_share": 0.28263795423956933,
-      "other_routed_to_agent": 0.34303534303534305,
-      "supported_wrongly_answered": 410
+      "answered_share": 0.34759358288770054,
+      "answered_accuracy": 0.6615384615384615,
+      "routed_to_agent_share": 0.6524064171122995,
+      "other_routed_to_agent": 0.859504132231405,
+      "supported_wrongly_answered": 22
     },
     {
       "threshold": 0.65,
-      "answered_share": 0.6527590847913862,
-      "answered_accuracy": 0.24329896907216494,
-      "routed_to_agent_share": 0.3472409152086137,
-      "other_routed_to_agent": 0.40124740124740127,
-      "supported_wrongly_answered": 367
+      "answered_share": 0.31016042780748665,
+      "answered_accuracy": 0.7068965517241379,
+      "routed_to_agent_share": 0.6898395721925134,
+      "other_routed_to_agent": 0.8925619834710744,
+      "supported_wrongly_answered": 17
     },
     {
       "threshold": 0.7,
-      "answered_share": 0.6056527590847914,
-      "answered_accuracy": 0.23777777777777778,
-      "routed_to_agent_share": 0.3943472409152086,
-      "other_routed_to_agent": 0.446985446985447,
-      "supported_wrongly_answered": 343
+      "answered_share": 0.2994652406417112,
+      "answered_accuracy": 0.7321428571428571,
+      "routed_to_agent_share": 0.7005347593582888,
+      "other_routed_to_agent": 0.9090909090909091,
+      "supported_wrongly_answered": 15
     },
     {
       "threshold": 0.75,
-      "answered_share": 0.5612382234185733,
-      "answered_accuracy": 0.24700239808153476,
-      "routed_to_agent_share": 0.4387617765814266,
-      "other_routed_to_agent": 0.49480249480249483,
-      "supported_wrongly_answered": 314
+      "answered_share": 0.28342245989304815,
+      "answered_accuracy": 0.7358490566037735,
+      "routed_to_agent_share": 0.7165775401069518,
+      "other_routed_to_agent": 0.9173553719008265,
+      "supported_wrongly_answered": 14
     },
     {
       "threshold": 0.8,
-      "answered_share": 0.4952893674293405,
-      "answered_accuracy": 0.25815217391304346,
-      "routed_to_agent_share": 0.5047106325706595,
-      "other_routed_to_agent": 0.5550935550935551,
-      "supported_wrongly_answered": 273
+      "answered_share": 0.25133689839572193,
+      "answered_accuracy": 0.7446808510638298,
+      "routed_to_agent_share": 0.7486631016042781,
+      "other_routed_to_agent": 0.9338842975206612,
+      "supported_wrongly_answered": 12
     },
     {
       "threshold": 0.85,
-      "answered_share": 0.4226110363391655,
-      "answered_accuracy": 0.267515923566879,
-      "routed_to_agent_share": 0.5773889636608345,
-      "other_routed_to_agent": 0.6174636174636174,
-      "supported_wrongly_answered": 230
+      "answered_share": 0.20855614973262032,
+      "answered_accuracy": 0.7948717948717948,
+      "routed_to_agent_share": 0.7914438502673797,
+      "other_routed_to_agent": 0.9586776859504132,
+      "supported_wrongly_answered": 8
     },
     {
       "threshold": 0.9,
-      "answered_share": 0.3566621803499327,
-      "answered_accuracy": 0.2679245283018868,
-      "routed_to_agent_share": 0.6433378196500673,
-      "other_routed_to_agent": 0.6798336798336798,
-      "supported_wrongly_answered": 194
+      "answered_share": 0.1657754010695187,
+      "answered_accuracy": 0.8064516129032258,
+      "routed_to_agent_share": 0.8342245989304813,
+      "other_routed_to_agent": 0.9586776859504132,
+      "supported_wrongly_answered": 6
     },
     {
       "threshold": 0.95,
-      "answered_share": 0.2651413189771198,
-      "answered_accuracy": 0.3096446700507614,
-      "routed_to_agent_share": 0.7348586810228802,
-      "other_routed_to_agent": 0.7713097713097713,
-      "supported_wrongly_answered": 136
+      "answered_share": 0.13368983957219252,
+      "answered_accuracy": 0.8,
+      "routed_to_agent_share": 0.8663101604278075,
+      "other_routed_to_agent": 0.9669421487603306,
+      "supported_wrongly_answered": 5
     }
   ]
 }

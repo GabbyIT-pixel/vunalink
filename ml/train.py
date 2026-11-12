@@ -48,10 +48,12 @@ def load(split, shuffle):
         os.path.join(args.data_dir, split), image_size=size, batch_size=mc["batch_size"],
         label_mode="int", class_names=class_names, shuffle=shuffle, seed=seed,
     )
-    return dataset.prefetch(tf.data.AUTOTUNE)
+    return dataset.prefetch(tf.data.AUTOTUNE), dataset.file_paths
 
 
-train, valid = load("train", True), load("validation", False)
+(train, _), (valid, valid_paths) = load("train", True), load("validation", False)
+# Field photos (from prepare_field_eval.py) are named field_*; the threshold is chosen on them when there are enough.
+valid_is_field = np.array([os.path.basename(path).startswith("field_") for path in valid_paths])
 
 # Class weights: inverse frequency, so the smallest class is not ignored.
 counts = np.array([len(os.listdir(os.path.join(args.data_dir, "train", name))) for name in class_names])
@@ -141,16 +143,28 @@ calibrated_probs = inference_model.predict(valid, verbose=0)
 
 print("Phase 4: choosing the unsure threshold")
 predictions, confidence = calibrated_probs.argmax(axis=1), calibrated_probs.max(axis=1)
-threshold = None
-for candidate in np.arange(calib["min_threshold"], 0.991, 0.01):
-    answered = (predictions != other_id) & (confidence >= candidate)
-    if answered.any() and (predictions[answered] == valid_labels[answered]).mean() >= calib["target_answered_accuracy"]:
-        threshold = float(round(candidate, 2))
-        break
-if threshold is None:
-    threshold = 0.99
-    print("Warning: target answered accuracy not reached on validation; using threshold 0.99.")
-print(f"Unsure threshold: {threshold}")
+
+
+def lowest_threshold(mask, target, ceiling):
+    """Lowest threshold at which answered predictions in `mask` reach `target` accuracy, else `ceiling`."""
+    for candidate in np.arange(calib["min_threshold"], ceiling + 0.001, 0.01):
+        answered = mask & (predictions != other_id) & (confidence >= candidate)
+        if answered.any() and (predictions[answered] == valid_labels[answered]).mean() >= target:
+            return float(round(candidate, 2)), True
+    return ceiling, False
+
+
+lab_threshold, lab_reached = lowest_threshold(~valid_is_field, calib["target_answered_accuracy"], 0.99)
+threshold, threshold_source = lab_threshold, "lab validation photos"
+field_threshold = None
+if valid_is_field.sum() >= calib["min_field_images"]:
+    # Field photos are harder, so they get their own (lower) accuracy target; the stricter threshold wins.
+    field_threshold, field_reached = lowest_threshold(valid_is_field, calib["field_target_answered_accuracy"], calib["max_threshold"])
+    if not field_reached:
+        print(f"Warning: field target not reached on {valid_is_field.sum()} field validation photos; using {field_threshold}.")
+    if field_threshold > threshold:
+        threshold, threshold_source = field_threshold, f"{int(valid_is_field.sum())} field validation photos"
+print(f"Unsure threshold: {threshold} (from {threshold_source}; lab {lab_threshold}, field {field_threshold})")
 
 inference_model.save(output / "model.keras")
 inference_model.export(output / "saved_model")
@@ -185,6 +199,9 @@ metadata = {
         "method": "temperature scaling on validation split, folded into the classifier layer",
         "temperature": temperature,
         "unsure_threshold": threshold,
+        "threshold_source": threshold_source,
+        "lab_threshold": lab_threshold,
+        "field_threshold": field_threshold,
         "unsure_rule": f"ask an agent if the top class is '{other_label}' or its probability is below unsure_threshold",
         "target_answered_accuracy": calib["target_answered_accuracy"],
         "note": calib["note"],

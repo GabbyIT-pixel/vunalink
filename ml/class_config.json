@@ -60,6 +60,9 @@
   "calibration": {
     "target_answered_accuracy": 0.95,
     "min_threshold": 0.7,
-    "note": "The unsure threshold is chosen on PlantVillage validation data and is optimistic for field photos. Re-check it against the field evaluation sweep."
+    "note": "The threshold is the stricter of: the lowest reaching target_answered_accuracy on lab validation photos, and (with at least min_field_images field validation photos) the lowest reaching field_target_answered_accuracy on them, capped at max_threshold. Field validation is small, so check the field test sweep too.",
+    "field_target_answered_accuracy": 0.8,
+    "min_field_images": 50,
+    "max_threshold": 0.95
   }
 }

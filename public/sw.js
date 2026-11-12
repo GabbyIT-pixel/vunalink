@@ -1,4 +1,4 @@
-const CACHE_NAME = "vunalink-shell-v4"; // bump whenever the model in /models changes
+const CACHE_NAME = "vunalink-shell-v5"; // bump whenever the model in /models changes
 const APP_SHELL = [
   "/",
   "/scan",

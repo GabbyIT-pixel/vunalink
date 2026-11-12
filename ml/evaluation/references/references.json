@@ -1,6 +1,6 @@
 {
   "model": "/kaggle/working/artifacts/model.keras",
-  "model_version": "0.2.0",
+  "model_version": "0.3.0",
   "seed": 42,
   "images": [
     {
@@ -9,10 +9,10 @@
       "expectedClassId": 0,
       "referencePredictionClassId": 0,
       "referenceScores": [
-        0.8622530102729797,
-        0.02424010820686817,
-        0.0005155149265192449,
-        0.11299128830432892
+        0.9988910555839539,
+        0.0002895104407798499,
+        1.8322651840207982e-08,
+        0.0008194276015274227
       ]
     },
     {
@@ -21,10 +21,10 @@
       "expectedClassId": 1,
       "referencePredictionClassId": 1,
       "referenceScores": [
-        5.084688018541783e-05,
-        0.9994301199913025,
-        2.4970679746161295e-08,
-        0.0005189673975110054
+        6.355526238621678e-06,
+        0.9999262094497681,
+        6.115294013397943e-07,
+        6.688761641271412e-05
       ]
     },
     {
@@ -33,25 +33,24 @@
       "expectedClassId": 2,
       "referencePredictionClassId": 2,
       "referenceScores": [
-        3.6141811765588727e-10,
-        3.0898510772203736e-07,
-        0.9999926090240479,
-        7.013092272245558e-06
+        1.8552148706163507e-09,
+        3.1018660138215637e-06,
+        0.9999916553497314,
+        5.238845915300772e-06
       ]
     },
     {
       "image": "reference_003.jpg",
       "expectedClass": "Tomato___other",
       "expectedClassId": 3,
-      "referencePredictionClassId": 2,
+      "referencePredictionClassId": 3,
       "referenceScores": [
-        0.002930784597992897,
-        0.0003251883899793029,
-        0.572335958480835,
-        0.42440810799598694
+        0.0003466552007012069,
+        0.00028566765831783414,
+        0.020528312772512436,
+        0.9788393378257751
       ]
     }
   ],
-  "note": "Generated from the trained model; not a substitute for field validation.",
-  "resize": "bilinear, as in training"
+  "note": "Generated from the trained model; not a substitute for field validation."
 }

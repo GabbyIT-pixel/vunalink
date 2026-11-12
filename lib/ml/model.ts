@@ -13,8 +13,8 @@ ort.env.wasm.proxy = false;
 export const MODEL_PATH = "/models/vunalink-mobilenet-v2.onnx";
 // Keep in sync with public/models/model_metadata.json after each retrain ("version" and
 // "calibration.unsure_threshold"); tests/critical.test.ts checks this.
-export const MODEL_VERSION = "0.2.0";
-export const UNSURE_THRESHOLD = 0.74;
+export const MODEL_VERSION = "0.3.0";
+export const UNSURE_THRESHOLD = 0.9;
 export const MODEL_METADATA = { name: "VunaLink MobileNetV2 (tomato)", version: MODEL_VERSION, format: "onnx" as const, input: { width: 224, height: 224, channels: 3 }, trainingDataset: "PlantVillage", labels: MODEL_CLASS_LABELS, unsureThreshold: UNSURE_THRESHOLD };
 let sessionPromise: Promise<ort.InferenceSession> | null = null; let status: ModelStatus = "unavailable";
 export function getModelStatus(): ModelStatus { return status; }
