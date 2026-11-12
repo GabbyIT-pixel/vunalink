@@ -94,7 +94,7 @@ export function CropImagePicker() {
       try {
         await saveDiagnosis({
           id: crypto.randomUUID(), createdAt: new Date().toISOString(), crop: prediction.crop,
-          disease: unsure ? (inferenceResult.reason === "other-disease" ? "Ask an agent (other tomato problem)" : "Ask an agent (not sure)") : prediction.disease,
+          disease: unsure ? (inferenceResult.reason === "other-disease" ? "Ask an agent (not a known tomato problem)" : "Ask an agent (not sure)") : prediction.disease,
           diseaseId: unsure ? `unsure_${inferenceResult.reason}` : prediction.diseaseId,
           confidence: prediction.confidence, modelVersion: prediction.modelVersion,
         });

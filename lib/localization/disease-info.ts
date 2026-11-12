@@ -75,7 +75,7 @@ const UNSURE_INFO: Readonly<Record<SupportedLanguage, Record<"other-disease" | "
   rw: {
     "other-disease": {
       title: "Baza umukozi w'ubujyanama mu buhinzi",
-      explanation: "Iyi foto isa n'iyerekana ikindi kibazo cy'inyanya iyi porogaramu idatangaho inama. Ntukoreshe umuti utabanje kugisha inama.",
+      explanation: "Iyi foto ntihuye n'indwara z'inyanya iyi porogaramu izi. Bishobora kuba ari indi ndwara, cyangwa atari igihingwa cy'inyanya. Ntukoreshe umuti utabanje kugisha inama.",
       actions: ["Saba umukozi w'ubujyanama mu buhinzi kugenzura igihingwa.", "Mwereke iyi foto n'ibihingwa byafashwe.", "Kuraho ibice byangiritse cyane, ubishyire kure y'ibihingwa bizima."],
     },
     "low-confidence": {
@@ -87,7 +87,7 @@ const UNSURE_INFO: Readonly<Record<SupportedLanguage, Record<"other-disease" | "
   en: {
     "other-disease": {
       title: "Ask an extension agent",
-      explanation: "This photo looks like a different tomato problem that this app does not give advice for. Do not use a chemical product before getting advice.",
+      explanation: "This photo doesn't match the tomato problems this app knows. It may be another disease, or not a tomato plant. Do not use a chemical product before getting advice.",
       actions: ["Ask an agricultural extension worker to check the plant.", "Show them this photo and the affected plants.", "Remove severely affected plant parts and keep them away from healthy crops."],
     },
     "low-confidence": {
