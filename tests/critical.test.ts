@@ -57,7 +57,7 @@ describe("critical offline behavior", () => {
   });
 
   it("refuses to diagnose with a model that has a different number of classes", () => {
-    expect(postprocess([0.01, 0.02, 0.03, 0.8, 0.1, 0.04], metadata)).toMatchObject({ status: "error" });
+    expect(postprocess([0.01, 0.02, 0.03, 0.8, 0.1, 0.04], metadata)).toMatchObject({ status: "error", code: "modelMismatch" });
   });
 
   it("has unsure guidance in both languages", () => {

@@ -5,8 +5,8 @@ import type { InferenceResult, ModelMetadata } from "./types";
 export const DEFAULT_UNSURE_THRESHOLD = 0.7;
 
 export function postprocess(output: readonly number[], metadata: ModelMetadata): InferenceResult {
-  if (!output.length || output.some((value) => !Number.isFinite(value))) return { status: "error", message: "The model returned an invalid result." };
-  if (output.length !== MODEL_LABELS.length) return { status: "error", message: "The installed crop model does not match this version of the app. Update the app or the model." };
+  if (!output.length || output.some((value) => !Number.isFinite(value))) return { status: "error", code: "invalidOutput" };
+  if (output.length !== MODEL_LABELS.length) return { status: "error", code: "modelMismatch" };
   const classId = output.indexOf(Math.max(...output)); const label = getLabel(classId);
   if (!label) return { status: "unsupported-class", classId };
   const prediction = { classId, diseaseId: label.diseaseId, disease: label.disease, crop: label.crop, confidence: output[classId], modelVersion: metadata.version };

@@ -1,4 +1,8 @@
 import type { ImageValidationError } from "@/lib/image/validation";
+import type { InferenceErrorCode } from "@/lib/ml/types";
+
+// Every error the scan screen can show: bad file, image that won't open, or model problems.
+export type ScanErrorCode = ImageValidationError | InferenceErrorCode | "imageOpenFailed" | "imageDisplayFailed" | "unsupportedClass";
 
 // Every language VunaLink supports. Kinyarwanda comes first because it is the default.
 export const SUPPORTED_LANGUAGES = ["rw", "en"] as const;
@@ -24,6 +28,41 @@ const en = {
     eyebrow: "Scan",
     title: "Check a crop",
     intro: "Take a clear photo of a leaf or choose one from your phone.",
+    sectionLabel: "Crop image selection",
+    preparing: "Preparing your image…",
+    selectedPhotoAlt: "Selected crop",
+    removeImage: "Remove selected image",
+    reselect: "Reselect",
+    takePhoto: "Take a photo",
+    takePhotoHint: "Use your camera",
+    chooseImage: "Choose an image",
+    chooseImageHint: "From your phone",
+    fileRules: "JPG, PNG, or WebP · Maximum 10 MB",
+    analyze: "Analyze Crop",
+    analyzing: "Analyzing on this device…",
+  },
+  result: {
+    aiResult: "AI result",
+    crop: "Crop",
+    disease: "Disease",
+    confidence: "Confidence",
+    model: "Model",
+    fieldWarning: "This model has been tested on lab photos and a small set of field photos from the web, not yet on farms in Rwanda. Ask an agricultural extension worker to confirm this result.",
+    noDiagnosis: "No diagnosis",
+    modelConfidence: "Model confidence",
+  },
+  // Keys match the `crop` values in lib/ml/labels.ts.
+  crops: {
+    Tomato: "Tomato",
+  },
+  recommendation: {
+    label: "Agricultural guidance",
+    eyebrow: "What to do",
+    treatment: "Treatment guidance",
+    symptoms: "What to look for",
+    actions: "Actions",
+    prevention: "Prevention",
+    warning: "Warning",
   },
   modelStatus: {
     title: "Analysis happens on this device",
@@ -68,12 +107,20 @@ const en = {
     notNow: "Not now",
     install: "Install",
   },
-  // Keys match the codes returned by validateImageFile, so the build fails if one is missing.
-  imageErrors: {
+  // One message per ScanErrorCode, so the build fails if a new error has no text.
+  scanErrors: {
     noImage: "No image selected. Choose a crop photo to continue.",
     unsupportedType: "Choose a JPG, PNG, or WebP image.",
     tooLarge: "That image is too large. Choose one smaller than 10 MB.",
-  } satisfies Record<ImageValidationError, string>,
+    imageOpenFailed: "This image cannot be opened. Choose a different crop photo.",
+    imageDisplayFailed: "This image cannot be displayed. Choose a different crop photo.",
+    unsupportedClass: "The model returned a crop type this app does not know. Update the app.",
+    modelLoadFailed: "The crop model could not be loaded on this phone. Close and reopen the app, or update it.",
+    modelMissingInput: "The crop model is missing its settings. Update the app.",
+    analysisFailed: "This photo could not be analyzed on this phone. Try another photo.",
+    invalidOutput: "The model returned an invalid result. Try another photo.",
+    modelMismatch: "The crop model does not match this version of the app. Update the app.",
+  } satisfies Record<ScanErrorCode, string>,
 };
 
 // Typing rw as Dictionary makes the build fail if a key is missing,
@@ -99,6 +146,40 @@ const rw: Dictionary = {
     eyebrow: "Gusuzuma",
     title: "Suzuma igihingwa",
     intro: "Fata ifoto igaragara neza y'ibabi cyangwa uhitemo iri muri telefoni yawe.",
+    sectionLabel: "Guhitamo ifoto y'igihingwa",
+    preparing: "Turimo gutegura ifoto yawe…",
+    selectedPhotoAlt: "Ifoto y'igihingwa wahisemo",
+    removeImage: "Kuraho ifoto wahisemo",
+    reselect: "Hitamo indi",
+    takePhoto: "Fata ifoto",
+    takePhotoHint: "Koresha kamera",
+    chooseImage: "Hitamo ifoto",
+    chooseImageHint: "Iri muri telefoni yawe",
+    fileRules: "JPG, PNG cyangwa WebP · Ntirenze MB 10",
+    analyze: "Suzuma igihingwa",
+    analyzing: "Turimo gusuzuma kuri iyi telefoni…",
+  },
+  result: {
+    aiResult: "Icyo AI yasanze",
+    crop: "Igihingwa",
+    disease: "Indwara",
+    confidence: "Icyizere cya model",
+    model: "Model",
+    fieldWarning: "Iyi model yageragejwe ku mafoto yo muri laboratwari n'amafoto make yo mu mirima yo kuri internet, ntiragenzurwa mu mirima yo mu Rwanda. Saba umukozi w'ubujyanama mu buhinzi kwemeza iri suzuma.",
+    noDiagnosis: "Nta suzuma",
+    modelConfidence: "Icyizere cya model",
+  },
+  crops: {
+    Tomato: "Inyanya",
+  },
+  recommendation: {
+    label: "Inama z'ubuhinzi",
+    eyebrow: "Icyo wakora",
+    treatment: "Uko wabivura",
+    symptoms: "Ibyo wareba",
+    actions: "Ibyo wakora",
+    prevention: "Uko wayirinda",
+    warning: "Icyitonderwa",
   },
   modelStatus: {
     title: "Isuzuma rikorerwa kuri iyi telefoni",
@@ -143,12 +224,26 @@ const rw: Dictionary = {
     notNow: "Ubu oya",
     install: "Shyiramo",
   },
-  imageErrors: {
+  scanErrors: {
     noImage: "Nta foto wahisemo. Hitamo ifoto y'igihingwa kugira ngo ukomeze.",
     unsupportedType: "Hitamo ifoto ya JPG, PNG cyangwa WebP.",
     tooLarge: "Iyo foto ni nini cyane. Hitamo iri munsi ya MB 10.",
+    imageOpenFailed: "Iyi foto ntishobora gufunguka. Hitamo indi foto y'igihingwa.",
+    imageDisplayFailed: "Iyi foto ntishobora kugaragara. Hitamo indi foto y'igihingwa.",
+    unsupportedClass: "Model yatanze igisubizo iyi porogaramu itazi. Vugurura porogaramu.",
+    modelLoadFailed: "Model isuzuma ibihingwa ntiyashoboye gufunguka kuri iyi telefoni. Funga porogaramu wongere uyifungure, cyangwa uyivugurure.",
+    modelMissingInput: "Model isuzuma ibihingwa ibura amagenamiterere yayo. Vugurura porogaramu.",
+    analysisFailed: "Iyi foto ntiyashoboye gusuzumwa kuri iyi telefoni. Gerageza indi foto.",
+    invalidOutput: "Model yatanze igisubizo kidasobanutse. Gerageza indi foto.",
+    modelMismatch: "Model iri kuri iyi telefoni ntihuye n'iyi verisiyo ya porogaramu. Vugurura porogaramu.",
   },
 };
+
+// Show a crop name (e.g. "Tomato" from the model labels) in the chosen language.
+// Falls back to the original name if a new crop has not been translated yet.
+export function translateCrop(crop: string, dictionary: Dictionary): string {
+  return (dictionary.crops as Readonly<Record<string, string>>)[crop] ?? crop;
+}
 
 export const DICTIONARIES: Readonly<Record<Language, Dictionary>> = { en, rw };
 
