@@ -9,15 +9,37 @@ import { postprocess } from "@/lib/ml/postprocess";
 import { getRecommendation } from "@/lib/recommendations/knowledge-base";
 import { clearDiagnoses, getDiagnoses, saveDiagnosis } from "@/lib/history/storage";
 import { validateImageFile } from "@/lib/image/validation";
+import { DICTIONARIES, SUPPORTED_LANGUAGES, isSupportedLanguage } from "@/lib/i18n/dictionaries";
 
 const metadata = { name: "test", version: "0.2.0", format: "onnx" as const, unsureThreshold: 0.7 };
 
 describe("critical offline behavior", () => {
   it("validates image selection, type, and size", () => {
-    expect(validateImageFile()).toContain("No image");
-    expect(validateImageFile({ type: "image/gif", size: 10 })).toContain("JPG");
-    expect(validateImageFile({ type: "image/jpeg", size: 11 * 1024 * 1024 })).toContain("too large");
+    expect(validateImageFile()).toBe("noImage");
+    expect(validateImageFile({ type: "image/gif", size: 10 })).toBe("unsupportedType");
+    expect(validateImageFile({ type: "image/jpeg", size: 11 * 1024 * 1024 })).toBe("tooLarge");
     expect(validateImageFile({ type: "image/jpeg", size: 100 })).toBeNull();
+  });
+
+  it("has a non-empty label for every screen text in every language", () => {
+    // Collect every string in a dictionary as "section.key" -> text, so a failure names the blank key.
+    const flattenDictionary = (value: unknown, path = ""): [string, unknown][] =>
+      typeof value === "object" && value !== null
+        ? Object.entries(value).flatMap(([key, child]) => flattenDictionary(child, path ? `${path}.${key}` : key))
+        : [[path, value]];
+
+    for (const language of SUPPORTED_LANGUAGES) {
+      for (const [key, text] of flattenDictionary(DICTIONARIES[language])) {
+        expect(typeof text === "string" && text.trim().length > 0, `${language}: ${key}`).toBe(true);
+      }
+    }
+  });
+
+  it("only accepts supported languages from storage", () => {
+    expect(isSupportedLanguage("rw")).toBe(true);
+    expect(isSupportedLanguage("en")).toBe(true);
+    expect(isSupportedLanguage("fr")).toBe(false);
+    expect(isSupportedLanguage(null)).toBe(false);
   });
 
   it("maps the highest model output index to the correct disease", () => {
