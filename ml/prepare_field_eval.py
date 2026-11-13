@@ -111,10 +111,17 @@ for root in args.extra_dir:
         name += "x"
     folders = []
     for key, (folder, dirs) in sorted(discover_class_dirs(root).items()):
-        if any(word in key for word in skip_words) or key in {"train", "test", "val", "valid", "validation", "images"}:
+        if key in {"train", "test", "val", "valid", "validation", "images"}:
             print(f"Note: skipping folder '{folder}' in {root} (not a class folder).")
             continue
-        folders.append((folder, label_for(folder), dirs))
+        # Skip augmented copies wherever they sit (e.g. "Augmented Dataset/Early Blight"):
+        # they are edited copies of the originals and would leak test photos into training.
+        kept = [d for d in dirs if not any(word in normalize(part) for part in Path(d).relative_to(root).parts for word in skip_words)]
+        for d in dirs:
+            if d not in kept:
+                print(f"Note: skipping '{Path(d).relative_to(root)}' (augmented copies).")
+        if kept:
+            folders.append((folder, label_for(folder), kept))
     labels = {label for _, label, _ in folders}
     if not labels - {unmatched_label}:
         raise SystemExit(f"{root}: no folder name matched early blight, late blight or healthy. "
