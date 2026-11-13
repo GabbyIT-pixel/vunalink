@@ -23,6 +23,7 @@ as RGB JPEG; extra datasets are also shrunk to at most 640 px (the model sees 22
 import argparse
 import hashlib
 import json
+import random
 import shutil
 from collections import Counter
 from pathlib import Path
@@ -77,9 +78,26 @@ def split_rows(rows):
         largest_for_label.setdefault(next(r["label"] for r in rows if r["source"] == source), source)
     strata = [r["source"] if counts[r["source"]] >= 8 else largest_for_label[r["label"]] for r in rows]
     held = shares["validation"] + shares["test"]
-    train, rest, _, rest_strata = train_test_split(rows, strata, test_size=held, random_state=seed, stratify=strata)
-    valid, test = train_test_split(rest, test_size=shares["test"] / held, random_state=seed, stratify=rest_strata)
-    return {"train": train, "validation": valid, "test": test}
+    try:
+        train, rest, _, rest_strata = train_test_split(rows, strata, test_size=held, random_state=seed, stratify=strata)
+        valid, test = train_test_split(rest, test_size=shares["test"] / held, random_state=seed, stratify=rest_strata)
+        return {"train": train, "validation": valid, "test": test}
+    except ValueError:
+        # Some folder is too small for sklearn's stratified split (e.g. 3 photos). Split each folder by hand:
+        # rounded shares, at least one test photo when a folder has 3 or more, the rest to training.
+        print("Note: small folders; splitting each folder by hand.")
+        rng = random.Random(seed)
+        parts = {"train": [], "validation": [], "test": []}
+        for stratum in sorted(set(strata)):
+            members = [r for r, s in zip(rows, strata) if s == stratum]
+            rng.shuffle(members)
+            n = len(members)
+            n_test = max(round(n * shares["test"]), 1 if n >= 3 else 0)
+            n_valid = round(n * shares["validation"]) if n - n_test >= 3 else 0
+            parts["test"] += members[:n_test]
+            parts["validation"] += members[n_test:n_test + n_valid]
+            parts["train"] += members[n_test + n_valid:]
+        return parts
 
 
 def label_for(folder):
