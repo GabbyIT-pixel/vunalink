@@ -197,13 +197,22 @@ for split, rows in {"train": train_rows, "validation": valid_rows, "test": test_
 
 if args.field_dir:
     # Field photos join train and validation only; field/test stays untouched for evaluation.
+    # Repeat per dataset: field_<dataset>__... (see prepare_field_eval.py). A plain number = same for all.
     repeat = config["field_eval"].get("train_repeat", 1)
+
+    def repeat_for(path):
+        if isinstance(repeat, int):
+            return repeat
+        dataset = path.stem.removeprefix("field_").split("__")[0] if "__" in path.stem else "plantdoc"
+        return repeat.get(dataset, repeat.get("default", 1))
+
     added = {}
-    for split, copies in {"train": repeat, "validation": 1}.items():
+    for split in ("train", "validation"):
         count = Counter()
         for label in classes:
             source_dir = Path(args.field_dir) / split / label
             for path in image_files(source_dir) if source_dir.exists() else []:
+                copies = repeat_for(path) if split == "train" else 1
                 for k in range(copies):
                     shutil.copy2(path, output / split / label / (f"{path.stem}_r{k}{path.suffix}" if copies > 1 else path.name))
                 count[label] += 1

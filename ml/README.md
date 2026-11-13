@@ -120,6 +120,35 @@ baselines on the tomato-only field test: v0.2.0 25.1% accuracy
 
 PlantDoc is CC BY 4.0: credit "PlantDoc (Singh et al., 2020)" wherever results are shown.
 
+## Extra field photos (public datasets or your own farm photos)
+
+Real field photos of tomato are what the model is shortest of: v0.4.0 answers only about a
+quarter of real tomato field photos correctly and calls some late blight early blight. Any
+folder of labelled field photos can be added:
+
+1. Arrange the photos as **one folder per class**. The folder name sets the label: a name
+   containing "early blight", "late blight" or "healthy" becomes that class; any other
+   folder (other diseases, other crops) becomes "other". Train/test subfolders are fine.
+2. Upload it to Kaggle as a dataset (**+ Create → New Dataset**) and attach it to the notebook.
+3. Run the notebook. It finds the dataset by itself (or list it in `EXTRA_FIELD_DIRS`) and
+   prints which folder went to which class: **check that list before training.**
+
+Each dataset is split on its own (60/15/25), so its test photos are never trained on and
+PlantDoc's test photos stay the same; the notebook reports results per dataset. Extra
+datasets are repeated once in training (`field_eval.train_repeat`), PlantDoc three times.
+Folders with "augment" in the name are skipped, since augmented copies leak between splits.
+
+Public field datasets worth adding (both CC BY 4.0; credit them when you show results):
+
+- [Tomato Leaf Disease Classification Dataset in Pakistan](https://data.mendeley.com/datasets/3mbnb82mxd):
+  7,200 smartphone photos taken in fields; early blight, late blight, healthy, Septoria,
+  leaf mold, yellow leaf curl virus.
+- [Tomato Leaf Disease Classification Dataset (Bangladesh)](https://data.mendeley.com/datasets/jttrv2w27r):
+  2,995 photos; early blight 524, late blight 112, healthy 380, plus four other problems.
+
+Your own farm photos go in the same way, and are the most valuable: they look like what
+Rwandan farmers will photograph.
+
 ## What training does
 
 1. Trains a new head on frozen ImageNet MobileNetV2, with class weights and field-style

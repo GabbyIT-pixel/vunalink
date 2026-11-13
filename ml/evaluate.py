@@ -69,7 +69,7 @@ def evaluate_probabilities(labels, probabilities, class_names, other_id, thresho
 
 def other_group(source_key):
     """Coarse group for an "other" image, from the source prefix in its file name."""
-    key = source_key.removeprefix("field_")
+    key = source_key.removeprefix("field_").split("__")[-1]
     if "potato" in key:
         return "potato"
     if key.startswith("tomato"):
@@ -107,6 +107,36 @@ class OnnxModel:
         return np.concatenate([self.session.run(None, {self.input_name: x.numpy().astype(np.float32)})[0] for x, _ in dataset])
 
 
+def dataset_of(path):
+    """'plantvillage' for lab photos, else the field dataset name from field_<dataset>__..."""
+    stem = Path(path).stem
+    if not stem.startswith("field_"):
+        return "plantvillage"
+    return stem.removeprefix("field_").split("__")[0] if "__" in stem else "plantdoc"
+
+
+def per_dataset(paths, labels, probabilities, class_names, other_id, threshold):
+    """Accuracy and routing per dataset, so one dataset's photos can't hide another's problems."""
+    predictions, confidence = probabilities.argmax(axis=1), probabilities.max(axis=1)
+    answered = (predictions != other_id) & (confidence >= threshold)
+    names = np.array([dataset_of(p) for p in paths])
+    result = {}
+    for name in sorted(set(names)):
+        m = names == name
+        supported = m & (labels != other_id)
+        result[name] = {
+            "images": int(m.sum()),
+            "accuracy": float((predictions[m] == labels[m]).mean()),
+            "supported_images": int(supported.sum()),
+            "supported_correct_answers": int((answered & supported & (predictions == labels)).sum()),
+            "wrong_answers": int((answered & m & (predictions != labels)).sum()),
+            "other_routed_to_agent": float((~answered[m & (labels == other_id)]).mean()) if (m & (labels == other_id)).any() else None,
+            "per_class_recall": {class_names[i]: float((predictions[m & (labels == i)] == i).mean())
+                                 for i in range(len(class_names)) if (m & (labels == i)).any()},
+        }
+    return result
+
+
 def load_any_model(path):
     return OnnxModel(path) if str(path).endswith(".onnx") else tf.keras.models.load_model(path)
 
@@ -118,6 +148,7 @@ def evaluate_model(model, directory, class_names, other_label, image_size, batch
     other_id = class_names.index(other_label)
     result = evaluate_probabilities(labels, probabilities, class_names, other_id, threshold, dataset_name)
     result["other_routing"] = other_routing(dataset.file_paths, labels, probabilities, other_id, threshold)
+    result["by_dataset"] = per_dataset(dataset.file_paths, labels, probabilities, class_names, other_id, threshold)
     if dataset_name == "PlantVillage":
         result["note"] = "PlantVillage test metrics are lab images and do not represent Rwanda field accuracy."
     if output_path:
@@ -141,4 +172,5 @@ if __name__ == "__main__":
         load_any_model(args.model), args.data_dir, metadata["classes"], config["other_class"]["label"],
         size, config["model"]["batch_size"], metadata["calibration"]["unsure_threshold"], args.dataset_name, args.output,
     )
-    print(json.dumps({"metrics": result["metrics"], "unsure_routing": result["unsure_routing"], "other_routing": result["other_routing"]["by_group"]}, indent=2))
+    print(json.dumps({"metrics": result["metrics"], "unsure_routing": result["unsure_routing"],
+                      "other_routing": result["other_routing"]["by_group"], "by_dataset": result["by_dataset"]}, indent=2))

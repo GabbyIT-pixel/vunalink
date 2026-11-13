@@ -67,8 +67,42 @@
       "validation": 0.15,
       "test": 0.25
     },
-    "train_repeat": 3,
-    "note": "All PlantDoc tomato images are pooled and split here. With --field-dir, field train/validation images are mixed into training (each train image repeated train_repeat times so field photos are not swamped by lab photos); field test is never trained on."
+    "train_repeat": {
+      "plantdoc": 3,
+      "default": 1
+    },
+    "note": "PlantDoc is split as before; each extra dataset is split on its own (60/15/25). Field train photos are repeated train_repeat times per dataset (PlantDoc is small, so x3; larger extra datasets x1). Field test is never trained on.",
+    "extra_rules": {
+      "rules": [
+        {
+          "match": [
+            "early blight",
+            "earlyblight",
+            "early_blight"
+          ],
+          "label": "Tomato___Early_blight"
+        },
+        {
+          "match": [
+            "late blight",
+            "lateblight",
+            "late_blight"
+          ],
+          "label": "Tomato___Late_blight"
+        },
+        {
+          "match": [
+            "healthy"
+          ],
+          "label": "Tomato___healthy"
+        }
+      ],
+      "unmatched": "Tomato___other",
+      "skip_folders": [
+        "augment"
+      ],
+      "note": "Extra field datasets (--extra-dir) are labelled by folder name: first matching rule wins, anything else is 'other'. Folders with 'augment' in the name are skipped (augmented copies leak between splits)."
+    }
   },
   "split": {
     "validation": 0.15,
