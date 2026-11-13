@@ -4,7 +4,7 @@ import re
 from pathlib import Path
 
 IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png"}
-SKIP_DIR_HINTS = ("grayscale", "segmented")
+SKIP_DIR_HINTS = ("grayscale", "segmented", "augment")  # augmented copies would leak between splits
 
 
 def load_config(path):
