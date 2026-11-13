@@ -71,24 +71,35 @@ train/val folders, which are pooled and re-split) and PlantDoc all work. Graysca
 segmented PlantVillage variants are skipped. Don't point them at augmented copies of
 PlantVillage: near-duplicate images would leak between train and test.
 
-## Current model: v0.3.0
+## Current model: v0.4.0
 
-Trained on PlantVillage plus ~450 PlantDoc field photos. Measured on 911 held-out lab photos and
-187 held-out PlantDoc field photos (never trained on):
+Trained on PlantVillage (tomato, plus potato, other crops and photos without leaves in
+"other") and PlantDoc field photos. v0.4.0 and the previous app model (v0.3.0) were both scored
+on the same held-out photos: 1,149 lab photos and 306 PlantDoc field photos (never trained on).
+v0.3.0 at its 0.90 threshold, v0.4.0 at 0.95.
 
-| | Lab (PlantVillage) | Field (PlantDoc) | Field, v0.2.0 (lab-only training) |
-|---|---|---|---|
-| Accuracy | 96.6% | 74.9% | 25.1% |
-| Macro F1 | 0.96 | 0.67 | 0.19 |
-| Early / late blight / healthy F1 | 0.93 / 0.98 / 0.99 | 0.58 / 0.69 / 0.57 | 0.17 / 0.33 / 0.00 |
-| "Other" routed to an agent (at 0.90) | 99% | 96% | 45% (at 0.74) |
-| Answers right, at the unsure threshold | 99.3% | 80.6% (6 wrong) | 18% (91 wrong) |
-| Photos answered directly | 66% | 17% | 59% |
+| | Lab v0.4.0 | Lab v0.3.0 | Field v0.4.0 | Field v0.3.0 |
+|---|---|---|---|---|
+| Accuracy | 94.5% | 86.0% | 74.8% | 74.2% |
+| Macro F1 | 0.94 | 0.86 | 0.58 | 0.65 |
+| Early / late blight / healthy F1 | 0.90 / 0.93 / 0.98 | 0.81 / 0.89 / 0.92 | 0.42 / 0.57 / 0.51 | 0.61 / 0.53 / 0.65 |
+| Potato sent to an agent | 98% | 54% | 89% | 59% |
+| Other crops sent to an agent | 99% | 85% | 98% | 89% |
+| Other tomato diseases sent to an agent | 99% | 99% | 98% | 98% |
+| Wrong diagnoses shown | 6 | 69 | 9 | 32 |
+| Answers right / photos answered | 98.9% / 48% | 89.7% / 58% | 65.4% / 8.5% | 57.3% / 24.5% |
 
-The unsure threshold is **0.90**. Training picked 0.70 from mostly-lab validation photos; on the
-111 field validation photos, wrong answers fell from 7 to 3 between 0.70 and 0.90 (the field test
-sweep agreed: 15 to 6). Since 65% of the field test photos are "other", which should go to an
-agent, 17% answered means about half of the supported-disease photos get a direct answer.
+v0.4.0 fixes most of the potato and other-crop confusion and shows far fewer wrong diagnoses,
+but on field photos it sends more real tomato leaves to "other" (24 of 66 against 7 of 66), so
+it gives fewer direct answers: 17 correct ones against v0.3.0's 43. More labelled tomato field
+photos are the way to win those back.
+
+The unsure threshold is **0.95**, chosen automatically on the 183 field validation photos (the
+80% answered-accuracy target wasn't reached, so it went to the 0.95 cap). On those photos 0.90
+and 0.95 gave the same 5 wrong answers; on the field test, both gave 9.
+
+Comparison files: `artifacts/baseline_v0.3.0_lab_test.json` and
+`artifacts/baseline_v0.3.0_field_test.json`.
 
 Field numbers are from PlantDoc (web photos, small test set, same source as the field training
 photos), so they are an optimistic proxy for Rwandan farms, not a substitute for local testing.

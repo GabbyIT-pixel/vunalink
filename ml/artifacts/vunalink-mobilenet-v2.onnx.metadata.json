@@ -24,7 +24,7 @@
   "size_mb": 8.93,
   "verification": {
     "method": "64 real images compared with the Keras model",
-    "max_absolute_difference": 2.816319465637207e-06,
+    "max_absolute_difference": 3.4868717193603516e-06,
     "same_top_class": true,
     "passed": true
   }

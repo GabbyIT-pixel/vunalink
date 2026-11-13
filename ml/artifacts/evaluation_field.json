@@ -1,166 +1,224 @@
 {
   "dataset": "PlantDoc",
-  "image_count": 187,
+  "image_count": 306,
   "metrics": {
-    "accuracy": 0.7486631016042781,
-    "precision_macro": 0.6623343527013251,
-    "recall_macro": 0.6881641086186541,
-    "f1_macro": 0.6654846512183469
+    "accuracy": 0.7483660130718954,
+    "precision_macro": 0.548517909952156,
+    "recall_macro": 0.6465232683982683,
+    "f1_macro": 0.5835598398651496
   },
   "per_class": [
     {
       "class_id": 0,
       "label": "Tomato___Early_blight",
-      "precision": 0.5,
-      "recall": 0.6818181818181818,
-      "f1": 0.5769230769230769,
+      "precision": 0.38461538461538464,
+      "recall": 0.45454545454545453,
+      "f1": 0.4166666666666667,
       "support": 22
     },
     {
       "class_id": 1,
       "label": "Tomato___Late_blight",
-      "precision": 0.6111111111111112,
+      "precision": 0.4489795918367347,
       "recall": 0.7857142857142857,
-      "f1": 0.6875,
+      "f1": 0.5714285714285714,
       "support": 28
     },
     {
       "class_id": 2,
       "label": "Tomato___healthy",
-      "precision": 0.6666666666666666,
-      "recall": 0.5,
-      "f1": 0.5714285714285714,
+      "precision": 0.47368421052631576,
+      "recall": 0.5625,
+      "f1": 0.5142857142857142,
       "support": 16
     },
     {
       "class_id": 3,
       "label": "Tomato___other",
-      "precision": 0.8715596330275229,
-      "recall": 0.7851239669421488,
-      "f1": 0.8260869565217391,
-      "support": 121
+      "precision": 0.8867924528301887,
+      "recall": 0.7833333333333333,
+      "f1": 0.831858407079646,
+      "support": 240
     }
   ],
   "confusion_matrix": [
     [
-      15,
-      1,
+      10,
       0,
-      6
+      0,
+      12
     ],
     [
-      3,
+      1,
       22,
       0,
-      3
-    ],
-    [
-      1,
-      2,
-      8,
       5
     ],
     [
-      11,
-      11,
-      4,
-      95
+      0,
+      0,
+      9,
+      7
+    ],
+    [
+      15,
+      27,
+      10,
+      188
     ]
   ],
   "poorest_by_f1": [
-    "Tomato___healthy",
     "Tomato___Early_blight",
+    "Tomato___healthy",
     "Tomato___Late_blight",
     "Tomato___other"
   ],
   "unsure_routing": {
-    "threshold": 0.9,
-    "answered_share": 0.1657754010695187,
-    "answered_accuracy": 0.8064516129032258,
-    "routed_to_agent_share": 0.8342245989304813,
-    "other_routed_to_agent": 0.9586776859504132,
-    "supported_wrongly_answered": 6
+    "threshold": 0.95,
+    "answered_share": 0.08496732026143791,
+    "answered_accuracy": 0.6538461538461539,
+    "routed_to_agent_share": 0.9150326797385621,
+    "other_routed_to_agent": 0.9625,
+    "supported_wrongly_answered": 9
   },
   "threshold_sweep": [
     {
       "threshold": 0.5,
-      "answered_share": 0.39572192513368987,
-      "answered_accuracy": 0.581081081081081,
-      "routed_to_agent_share": 0.6042780748663101,
-      "other_routed_to_agent": 0.7933884297520661,
-      "supported_wrongly_answered": 31
+      "answered_share": 0.29411764705882354,
+      "answered_accuracy": 0.45555555555555555,
+      "routed_to_agent_share": 0.7058823529411765,
+      "other_routed_to_agent": 0.8,
+      "supported_wrongly_answered": 49
     },
     {
       "threshold": 0.55,
-      "answered_share": 0.3689839572192513,
-      "answered_accuracy": 0.6231884057971014,
-      "routed_to_agent_share": 0.6310160427807486,
-      "other_routed_to_agent": 0.8347107438016529,
-      "supported_wrongly_answered": 26
+      "answered_share": 0.27450980392156865,
+      "answered_accuracy": 0.47619047619047616,
+      "routed_to_agent_share": 0.7254901960784313,
+      "other_routed_to_agent": 0.8208333333333333,
+      "supported_wrongly_answered": 44
     },
     {
       "threshold": 0.6,
-      "answered_share": 0.34759358288770054,
-      "answered_accuracy": 0.6615384615384615,
-      "routed_to_agent_share": 0.6524064171122995,
-      "other_routed_to_agent": 0.859504132231405,
-      "supported_wrongly_answered": 22
+      "answered_share": 0.2581699346405229,
+      "answered_accuracy": 0.46835443037974683,
+      "routed_to_agent_share": 0.7418300653594772,
+      "other_routed_to_agent": 0.8291666666666667,
+      "supported_wrongly_answered": 42
     },
     {
       "threshold": 0.65,
-      "answered_share": 0.31016042780748665,
-      "answered_accuracy": 0.7068965517241379,
-      "routed_to_agent_share": 0.6898395721925134,
-      "other_routed_to_agent": 0.8925619834710744,
-      "supported_wrongly_answered": 17
+      "answered_share": 0.23202614379084968,
+      "answered_accuracy": 0.4647887323943662,
+      "routed_to_agent_share": 0.7679738562091504,
+      "other_routed_to_agent": 0.8458333333333333,
+      "supported_wrongly_answered": 38
     },
     {
       "threshold": 0.7,
-      "answered_share": 0.2994652406417112,
-      "answered_accuracy": 0.7321428571428571,
-      "routed_to_agent_share": 0.7005347593582888,
-      "other_routed_to_agent": 0.9090909090909091,
-      "supported_wrongly_answered": 15
+      "answered_share": 0.20588235294117646,
+      "answered_accuracy": 0.47619047619047616,
+      "routed_to_agent_share": 0.7941176470588235,
+      "other_routed_to_agent": 0.8666666666666667,
+      "supported_wrongly_answered": 33
     },
     {
       "threshold": 0.75,
-      "answered_share": 0.28342245989304815,
-      "answered_accuracy": 0.7358490566037735,
-      "routed_to_agent_share": 0.7165775401069518,
-      "other_routed_to_agent": 0.9173553719008265,
-      "supported_wrongly_answered": 14
+      "answered_share": 0.17647058823529413,
+      "answered_accuracy": 0.5370370370370371,
+      "routed_to_agent_share": 0.8235294117647058,
+      "other_routed_to_agent": 0.9,
+      "supported_wrongly_answered": 25
     },
     {
       "threshold": 0.8,
-      "answered_share": 0.25133689839572193,
-      "answered_accuracy": 0.7446808510638298,
-      "routed_to_agent_share": 0.7486631016042781,
-      "other_routed_to_agent": 0.9338842975206612,
-      "supported_wrongly_answered": 12
+      "answered_share": 0.1503267973856209,
+      "answered_accuracy": 0.5869565217391305,
+      "routed_to_agent_share": 0.8496732026143791,
+      "other_routed_to_agent": 0.9208333333333333,
+      "supported_wrongly_answered": 19
     },
     {
       "threshold": 0.85,
-      "answered_share": 0.20855614973262032,
-      "answered_accuracy": 0.7948717948717948,
-      "routed_to_agent_share": 0.7914438502673797,
-      "other_routed_to_agent": 0.9586776859504132,
-      "supported_wrongly_answered": 8
+      "answered_share": 0.12091503267973856,
+      "answered_accuracy": 0.5945945945945946,
+      "routed_to_agent_share": 0.8790849673202614,
+      "other_routed_to_agent": 0.9375,
+      "supported_wrongly_answered": 15
     },
     {
       "threshold": 0.9,
-      "answered_share": 0.1657754010695187,
-      "answered_accuracy": 0.8064516129032258,
-      "routed_to_agent_share": 0.8342245989304813,
-      "other_routed_to_agent": 0.9586776859504132,
-      "supported_wrongly_answered": 6
+      "answered_share": 0.10130718954248366,
+      "answered_accuracy": 0.7096774193548387,
+      "routed_to_agent_share": 0.8986928104575164,
+      "other_routed_to_agent": 0.9625,
+      "supported_wrongly_answered": 9
     },
     {
       "threshold": 0.95,
-      "answered_share": 0.13368983957219252,
-      "answered_accuracy": 0.8,
-      "routed_to_agent_share": 0.8663101604278075,
-      "other_routed_to_agent": 0.9669421487603306,
-      "supported_wrongly_answered": 5
+      "answered_share": 0.08496732026143791,
+      "answered_accuracy": 0.6538461538461539,
+      "routed_to_agent_share": 0.9150326797385621,
+      "other_routed_to_agent": 0.9625,
+      "supported_wrongly_answered": 9
     }
-  ]
+  ],
+  "other_routing": {
+    "by_group": {
+      "other crops": {
+        "images": 65,
+        "routed_to_agent": 0.9846153846153847
+      },
+      "potato": {
+        "images": 54,
+        "routed_to_agent": 0.8888888888888888
+      },
+      "tomato other diseases": {
+        "images": 121,
+        "routed_to_agent": 0.9834710743801653
+      }
+    },
+    "by_source": {
+      "field_bellpepperleaf": {
+        "images": 15,
+        "routed_to_agent": 1.0
+      },
+      "field_bellpepperleafspot": {
+        "images": 17,
+        "routed_to_agent": 0.9411764705882353
+      },
+      "field_potatoleafearlyblight": {
+        "images": 29,
+        "routed_to_agent": 0.896551724137931
+      },
+      "field_potatoleaflateblight": {
+        "images": 25,
+        "routed_to_agent": 0.88
+      },
+      "field_squashpowderymildewleaf": {
+        "images": 33,
+        "routed_to_agent": 1.0
+      },
+      "field_tomatoleafbacterialspot": {
+        "images": 28,
+        "routed_to_agent": 0.9642857142857143
+      },
+      "field_tomatoleafmosaicvirus": {
+        "images": 14,
+        "routed_to_agent": 1.0
+      },
+      "field_tomatoleafyellowvirus": {
+        "images": 19,
+        "routed_to_agent": 1.0
+      },
+      "field_tomatomoldleaf": {
+        "images": 22,
+        "routed_to_agent": 0.9545454545454546
+      },
+      "field_tomatoseptorialeafspot": {
+        "images": 38,
+        "routed_to_agent": 1.0
+      }
+    }
+  }
 }

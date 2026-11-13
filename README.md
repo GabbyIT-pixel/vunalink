@@ -34,12 +34,12 @@ Install the app or visit required routes once while online so service-worker cac
 
 ## Machine-learning model
 
-The browser model is `public/models/vunalink-mobilenet-v2.onnx`, version `0.3.0` (8.9 MB). It is a MobileNetV2 classifier fine-tuned on PlantVillage tomato images plus about 450 PlantDoc field photos, and executed with `onnxruntime-web`.
+The browser model is `public/models/vunalink-mobilenet-v2.onnx`, version `0.4.0` (8.9 MB). It is a MobileNetV2 classifier fine-tuned on PlantVillage images (tomato, plus potato and other crops as "other") and PlantDoc field photos, and executed with `onnxruntime-web`.
 
 - Input: `224 × 224 × 3`, RGB, `float32`, NHWC.
 - Output: four `float32` temperature-calibrated softmax probabilities.
-- Classes (in output order): tomato early blight, tomato late blight, tomato healthy, and tomato "other" (the seven other PlantVillage tomato diseases). "Other" has no treatment guidance; it always routes to an agent.
-- Unsure rule: if the top class is "other", or its probability is below **0.90**, the app shows "Ask an extension agent" instead of a diagnosis. The threshold is in `lib/ml/model.ts` and must match `public/models/model_metadata.json`; a test checks this.
+- Classes (in output order): tomato early blight, tomato late blight, tomato healthy, and "other": anything the app doesn't diagnose (the seven other PlantVillage tomato diseases, potato, other crops, photos without leaves). "Other" has no treatment guidance; it always routes to an agent. The class is still named `Tomato___other`.
+- Unsure rule: if the top class is "other", or its probability is below **0.95**, the app shows "Ask an extension agent" instead of a diagnosis. The threshold is in `lib/ml/model.ts` and must match `public/models/model_metadata.json`; a test checks this.
 - Browser preprocessing: resize to 224 × 224, read RGB pixels, and pass raw values in NHWC order. The MobileNetV2 formula `(pixel / 127.5) - 1` is embedded in the graph and must not be applied again.
 - Runtime: ONNX Runtime Web using local WebAssembly assets.
 - Metadata and mapping: `public/models/model_metadata.json` and `public/models/class_mapping.json`.
@@ -48,14 +48,15 @@ The browser model is `public/models/vunalink-mobilenet-v2.onnx`, version `0.3.0`
 
 Measured on held-out photos that were never used for training:
 
-| | Lab photos (PlantVillage, 911) | Field photos (PlantDoc, 187) |
+| | Lab photos (PlantVillage, 1,149) | Field photos (PlantDoc, 306) |
 |---|---|---|
-| Accuracy | 96.6% | 74.9% |
-| Macro F1 | 0.96 | 0.67 |
-| Answers that are right, at the 0.90 threshold | 99.3% | 80.6% |
-| "Other" routed to an agent | 99% | 96% |
+| Accuracy | 94.5% (v0.3.0: 86.0%) | 74.8% (v0.3.0: 74.2%) |
+| Potato photos sent to an agent | 98% (v0.3.0: 54%) | 89% (v0.3.0: 59%) |
+| Other-crop photos sent to an agent | 99% (v0.3.0: 85%) | 98% (v0.3.0: 89%) |
+| Wrong diagnoses shown | 6 (v0.3.0: 69) | 9 (v0.3.0: 32) |
+| Answers that are right, at the threshold | 98.9% | 65.4% (26 answered) |
 
-On the same field photos, the previous lab-only model (v0.2.0) scored 25.1% accuracy. Field photos are from PlantDoc (CC BY 4.0, Singh et al., 2020): web photos, not Rwandan farms, and from the same source as the field training photos, so they are an optimistic proxy. Independent validation on Rwandan farm photos is still required. Full details are in [`ml/README.md`](ml/README.md) and `ml/artifacts/`.
+Both models were scored on the same photos. v0.4.0 is much safer than v0.3.0: it sends most potato and other-crop photos to an agent and shows far fewer wrong diagnoses. The cost is that it answers fewer real tomato field photos directly (17 correct direct answers on the 66 supported tomato field photos, against 43 for v0.3.0, which also gave 32 wrong ones). Field photos are from PlantDoc (CC BY 4.0, Singh et al., 2020): web photos, not Rwandan farms, and from the same source as the field training photos, so they are an optimistic proxy. Independent validation on Rwandan farm photos is still required. Full details are in [`ml/README.md`](ml/README.md) and `ml/artifacts/`.
 
 ## Development
 
@@ -94,8 +95,9 @@ tests/                Critical application behavior tests
 
 ## Limitations
 
-- Tomato only. The model knows tomato early blight, late blight, healthy leaves, and seven other PlantVillage tomato diseases (grouped as "other"). It can still confidently misclassify tomato diseases it has never seen; for example, a leaf that looks like powdery mildew was called late blight.
-- There is no dedicated "not a leaf" class. Photos of people, objects, or other plants usually land in "other" or "unsure" and are routed to an agent, but this is not guaranteed.
+- Tomato only. The model diagnoses tomato early blight, late blight and healthy leaves; everything else should go to an agent, but not always: some potato photos still get a tomato result (on a 10-photo team check, a healthy potato leaf was called healthy tomato at 97%), and it can confidently misclassify tomato diseases it has never seen (a leaf that looks like powdery mildew was called late blight).
+- On real tomato field photos it often says "not sure" rather than diagnosing (about a quarter get a correct direct answer on PlantDoc). It needs labelled tomato photos from Rwandan farms to do better.
+- Photos without leaves (people, documents, fruit) are trained into "other" from PlantVillage's background folder and usually go to an agent, but this is not guaranteed.
 - Field accuracy is measured on PlantDoc web photos, not Rwandan farms. Independent Rwanda field validation is required before any field-accuracy claim.
 - The new "ask an agent" texts and the testing notice in Kinyarwanda need review by a native speaker or agronomist.
 - Browser inference depends on WebAssembly support, available memory, device speed, and storage quota. Universal device compatibility is not claimed.
