@@ -101,7 +101,9 @@
       "skip_folders": [
         "augment"
       ],
-      "note": "Extra field datasets (--extra-dir) are labelled by folder name: first matching rule wins, anything else is 'other'. Folders with 'augment' in the name are skipped (augmented copies leak between splits)."
+      "note": "Extra field datasets (--extra-dir) are labelled by folder name: first matching rule wins, anything else is 'other'. Folders with 'augment' in their path are skipped. dedupe_camera_variants keeps one file per camera photo when a dataset stores edited copies as IMG20220323100125_1.jpg, _2.jpg... (Tomato-Village). max_other_per_folder caps each 'other' folder so large pest/deficiency folders don't swamp the supported classes.",
+      "max_other_per_folder": 200,
+      "dedupe_camera_variants": true
     }
   },
   "split": {

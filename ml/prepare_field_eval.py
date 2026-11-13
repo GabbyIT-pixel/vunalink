@@ -24,6 +24,7 @@ import argparse
 import hashlib
 import json
 import random
+import re
 import shutil
 from collections import Counter
 from pathlib import Path
@@ -51,22 +52,44 @@ if output.exists():
     shutil.rmtree(output)
 
 
-def read_rows(dataset, folders, seen):
+CAMERA_VARIANT = re.compile(r"^(.*\d{6,})_\d{1,2}$")  # IMG20220323100125_3 -> edited copy of IMG20220323100125
+
+
+def originals_only(paths):
+    """Keep one file per camera photo: drop edited copies named <camera name>_<n> (flips, rotations, brightness).
+
+    Only names ending in a long digit run (camera names) are grouped, so names like
+    Early_Blight_81.jpg are never collapsed.
+    """
+    groups = {}
+    for path in sorted(paths, key=lambda p: (len(p.stem), p.stem)):
+        match = CAMERA_VARIANT.match(path.stem)
+        groups.setdefault(match.group(1) if match else path.stem, path)
+    return sorted(groups.values())
+
+
+def read_rows(dataset, folders, seen, dedupe_variants=False, max_other=None):
     """folders: [(folder name, label, [dirs])] -> deduplicated rows; also returns unreadable count."""
     rows, skipped = [], 0
+    rng = random.Random(seed)
     for folder, label, dirs in folders:
-        for directory in dirs:
-            for path in image_files(directory):
-                try:
-                    digest = hashlib.sha256(path.read_bytes()).hexdigest()
-                    if digest in seen:
-                        continue
-                    with Image.open(path) as image:
-                        image.convert("RGB")  # fails here, not later, if the file is unreadable
-                    seen.add(digest)
-                    rows.append({"path": path, "dataset": dataset, "source": folder, "label": label, "hash": digest})
-                except Exception:
-                    skipped += 1
+        paths = [path for directory in dirs for path in image_files(directory)]
+        if dedupe_variants:
+            paths = originals_only(paths)
+        if max_other and label == unmatched_label and len(paths) > max_other:
+            rng.shuffle(paths)
+            paths = sorted(paths[:max_other])
+        for path in paths:
+            try:
+                digest = hashlib.sha256(path.read_bytes()).hexdigest()
+                if digest in seen:
+                    continue
+                with Image.open(path) as image:
+                    image.convert("RGB")  # fails here, not later, if the file is unreadable
+                seen.add(digest)
+                rows.append({"path": path, "dataset": dataset, "source": folder, "label": label, "hash": digest})
+            except Exception:
+                skipped += 1
     return rows, skipped
 
 
@@ -144,7 +167,8 @@ for root in args.extra_dir:
     if not labels - {unmatched_label}:
         raise SystemExit(f"{root}: no folder name matched early blight, late blight or healthy. "
                          f"Folders found: {[f for f, _, _ in folders]}. Rename them or extend field_eval.extra_rules.")
-    rows, skipped = read_rows(name, folders, seen)
+    rows, skipped = read_rows(name, folders, seen, field["extra_rules"].get("dedupe_camera_variants", False),
+                              field["extra_rules"].get("max_other_per_folder"))
     datasets.append({"name": name, "root": root, "rows": rows, "skipped": skipped, "resize": True,
                      "mapping": {folder: label for folder, label, _ in folders}})
 

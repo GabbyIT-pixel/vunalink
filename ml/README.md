@@ -159,6 +159,14 @@ Public field datasets worth adding (both CC BY 4.0; credit them when you show re
 - [Tomato Leaf Disease Classification Dataset (Bangladesh)](https://data.mendeley.com/datasets/jttrv2w27r):
   2,995 photos; early blight 524, late blight 112, healthy 380, plus four other problems.
 
+- [Tomato-Village](https://github.com/mamta-joshi-gehlot/Tomato-Village) (from v0.7.0; the
+  notebook downloads it, `TOMATO_VILLAGE = True`): real field photos from Rajasthan, India
+  (Gehlot et al., Multimedia Systems 2023, doi:10.1007/s00530-023-01158-y). Most files are
+  edited copies (`IMG..._1.jpg`, `_2.jpg`); only originals are used: 62 early blight, 113 late
+  blight, 216 healthy, plus leaf miner, spotted wilt virus and nutrient deficiencies as "other"
+  (capped at 200 per folder). The repository has no licence file: cite the paper, and confirm
+  with the authors before any commercial use.
+
 Your own farm photos go in the same way, and are the most valuable: they look like what
 Rwandan farmers will photograph.
 
