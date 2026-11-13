@@ -23,11 +23,6 @@ v0.4.0 its budget (2x the median supported class) is split into groups
 - a quarter: every other PlantVillage crop, found automatically, plus photos without
   leaves (`Background_without_leaves`, when the dataset has it).
 
-From v0.6.0 (experiment): the budget is 1x the median supported class instead of 2x, split
-40% tomato diseases / 35% potato / 25% other crops, because in v0.5.0 the large "other"
-class pulled real early blight field photos into "other" (1 of 22 PlantDoc early blight
-photos diagnosed). Field training photos are repeated 3x for every dataset.
-
 v0.3.0 only had the tomato diseases in "other", so it called potato leaves tomato: on
 PlantDoc field photos it sent only 59% of potato photos to an agent.
 The class keeps the name `Tomato___other` so the app's labels don't change.
@@ -106,6 +101,14 @@ The unsure threshold is **0.82**, chosen automatically on the 262 field validati
 (lowest threshold with at least 80% of answers right). On the field test, 0.90 would cut
 wrong answers from 12 to 4 but drop correct ones from 43 to 34; change both
 `model_metadata.json` and `lib/ml/model.ts` if the team prefers that.
+
+**Experiment v0.6.0 (not shipped).** Halving "other" (1x the median class instead of 2x,
+40/35/25 shares) and repeating every field dataset 3x did not help early blight: on PlantDoc
+field photos it diagnosed 0 of 22 at 0.90 (v0.5.0: 1 of 22 at 0.82), with about the same
+total correct and wrong answers, while potato wrongly diagnosed as tomato rose from 3 to 7 of
+54. At its own automatic threshold (0.75) it gave 62 correct but 24 wrong diagnoses (v0.5.0:
+43 and 12). The v0.5.0 settings were restored. Early blight needs more early blight field
+photos, not a smaller "other".
 
 Comparison files: `artifacts/baseline_v0.4.0_lab_test.json` and
 `artifacts/baseline_v0.4.0_field_test.json`.

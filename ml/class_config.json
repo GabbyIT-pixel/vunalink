@@ -9,11 +9,11 @@
   "other_class": {
     "label": "Tomato___other",
     "meaning": "Anything that isn't one of the three supported tomato classes: other tomato diseases, potato, other crops, and photos without leaves. The app routes it to an extension agent.",
-    "budget_multiplier": 1.0,
+    "budget_multiplier": 2.0,
     "groups": [
       {
         "name": "tomato_diseases",
-        "share": 0.4,
+        "share": 0.5,
         "sources": [
           "Tomato___Bacterial_spot",
           "Tomato___Leaf_Mold",
@@ -26,7 +26,7 @@
       },
       {
         "name": "potato",
-        "share": 0.35,
+        "share": 0.25,
         "sources": [
           "Potato___Early_blight",
           "Potato___Late_blight",
@@ -42,7 +42,7 @@
         ]
       }
     ],
-    "note": "Budget = budget_multiplier x the median size of the target classes, split between groups by share. v0.6.0 halves it (2.0 -> 1.0) so 'other' competes less with early blight, and gives potato a bigger share (0.25 -> 0.35) so potato still goes to an agent. 'auto' = every PlantVillage folder (name with ___) that isn't tomato or in another group, plus 'include'. Unused budget from a small group moves to the others."
+    "note": "Budget = budget_multiplier x the median size of the target classes, split between groups by share and sampled evenly across each group's sources. 'auto' = every PlantVillage folder (name with ___) that isn't tomato or already in another group, plus 'include'. Unused budget from a small group moves to the others."
   },
   "field_eval": {
     "dataset": "PlantDoc",
@@ -69,7 +69,7 @@
     },
     "train_repeat": {
       "plantdoc": 3,
-      "default": 3
+      "default": 1
     },
     "note": "PlantDoc is split as before; each extra dataset is split on its own (60/15/25). Field train photos are repeated train_repeat times per dataset (PlantDoc is small, so x3; larger extra datasets x1). Field test is never trained on.",
     "extra_rules": {
