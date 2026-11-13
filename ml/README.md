@@ -23,6 +23,11 @@ v0.4.0 its budget (2x the median supported class) is split into groups
 - a quarter: every other PlantVillage crop, found automatically, plus photos without
   leaves (`Background_without_leaves`, when the dataset has it).
 
+From v0.6.0 (experiment): the budget is 1x the median supported class instead of 2x, split
+40% tomato diseases / 35% potato / 25% other crops, because in v0.5.0 the large "other"
+class pulled real early blight field photos into "other" (1 of 22 PlantDoc early blight
+photos diagnosed). Field training photos are repeated 3x for every dataset.
+
 v0.3.0 only had the tomato diseases in "other", so it called potato leaves tomato: on
 PlantDoc field photos it sent only 59% of potato photos to an agent.
 The class keeps the name `Tomato___other` so the app's labels don't change.
