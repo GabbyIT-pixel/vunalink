@@ -92,17 +92,39 @@ for group in other["groups"]:
                 print(f"Warning: '{name}' not found; group '{group['name']}' goes without it.")
     group_sources[group["name"]] = names
 
+def lazy_records(name, dirs, rng):
+    """Shuffled records for one source, checked and hashed only as they're taken.
+
+    Listing files is cheap; opening and hashing all ~55k PlantVillage photos is slow on
+    Kaggle's input disk, and only a few thousand are kept for "other".
+    """
+    paths = [path for directory in dirs for path in image_files(directory)]
+    rng.shuffle(paths)
+    seen = set()
+    for path in paths:
+        try:
+            with Image.open(path) as image:
+                image.verify()
+            digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        except Exception:
+            continue
+        if digest not in seen:
+            seen.add(digest)
+            yield {"path": path, "source_class": name, "hash": digest}
+
+
 rng = random.Random(seed)
-pools = {}
+pools, available = {}, {}
 for group in other["groups"]:
-    per_source = []
+    per_source, total = [], 0
     for name in group_sources[group["name"]]:
-        rows = load_records(discovered[normalize(name)][0], dirs_for(name))
-        rng.shuffle(rows)
-        if rows:
-            per_source.append(rows)
+        dirs = dirs_for(name)
+        count = sum(len(image_files(directory)) for directory in dirs)
+        if count:
+            per_source.append(lazy_records(discovered[normalize(name)][0], dirs, rng))
+            total += count
     pools[group["name"]] = per_source
-available = {name: sum(len(rows) for rows in pool) for name, pool in pools.items()}
+    available[group["name"]] = total
 
 # Split the budget by share; a group that runs short passes its unused budget to the others.
 quota = {g["name"]: 0 for g in other["groups"]}
@@ -124,13 +146,16 @@ while remaining > 0:
 other_rows, other_by_group = [], {}
 for name, pool in pools.items():
     # Round-robin across a group's sources so every one is represented evenly.
-    picked, sources = [], [rows for rows in pool if rows]
+    picked, sources = [], list(pool)
     while len(picked) < quota[name] and sources:
         for rows in list(sources):
-            if rows and len(picked) < quota[name]:
-                picked.append(rows.pop())
-            if not rows:
+            if len(picked) >= quota[name]:
+                break
+            row = next(rows, None)
+            if row is None:
                 sources.remove(rows)
+            else:
+                picked.append(row)
     other_rows += picked
     other_by_group[name] = {"images": len(picked), "sources": group_sources[name]}
 print(f"Other budget {other_budget}: " + ", ".join(f"{k} {v['images']}" for k, v in other_by_group.items()))
