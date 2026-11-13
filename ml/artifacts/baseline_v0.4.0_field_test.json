@@ -1,0 +1,266 @@
+{
+  "dataset": "PlantDoc (app model)",
+  "image_count": 440,
+  "metrics": {
+    "accuracy": 0.6954545454545454,
+    "precision_macro": 0.5370274305894607,
+    "recall_macro": 0.5525106507327692,
+    "f1_macro": 0.5246401438193393
+  },
+  "per_class": [
+    {
+      "class_id": 0,
+      "label": "Tomato___Early_blight",
+      "precision": 0.40816326530612246,
+      "recall": 0.46511627906976744,
+      "f1": 0.43478260869565216,
+      "support": 43
+    },
+    {
+      "class_id": 1,
+      "label": "Tomato___Late_blight",
+      "precision": 0.45454545454545453,
+      "recall": 0.7317073170731707,
+      "f1": 0.5607476635514018,
+      "support": 41
+    },
+    {
+      "class_id": 2,
+      "label": "Tomato___healthy",
+      "precision": 0.47619047619047616,
+      "recall": 0.2222222222222222,
+      "f1": 0.30303030303030304,
+      "support": 45
+    },
+    {
+      "class_id": 3,
+      "label": "Tomato___other",
+      "precision": 0.8092105263157895,
+      "recall": 0.7909967845659164,
+      "f1": 0.8,
+      "support": 311
+    }
+  ],
+  "confusion_matrix": [
+    [
+      20,
+      3,
+      0,
+      20
+    ],
+    [
+      2,
+      30,
+      0,
+      9
+    ],
+    [
+      1,
+      5,
+      10,
+      29
+    ],
+    [
+      26,
+      28,
+      11,
+      246
+    ]
+  ],
+  "poorest_by_f1": [
+    "Tomato___healthy",
+    "Tomato___Early_blight",
+    "Tomato___Late_blight",
+    "Tomato___other"
+  ],
+  "unsure_routing": {
+    "threshold": 0.95,
+    "answered_share": 0.07045454545454545,
+    "answered_accuracy": 0.6451612903225806,
+    "routed_to_agent_share": 0.9295454545454546,
+    "other_routed_to_agent": 0.9646302250803859,
+    "supported_wrongly_answered": 11
+  },
+  "threshold_sweep": [
+    {
+      "threshold": 0.5,
+      "answered_share": 0.29545454545454547,
+      "answered_accuracy": 0.46153846153846156,
+      "routed_to_agent_share": 0.7045454545454546,
+      "other_routed_to_agent": 0.8038585209003215,
+      "supported_wrongly_answered": 70
+    },
+    {
+      "threshold": 0.55,
+      "answered_share": 0.27045454545454545,
+      "answered_accuracy": 0.4957983193277311,
+      "routed_to_agent_share": 0.7295454545454545,
+      "other_routed_to_agent": 0.8263665594855305,
+      "supported_wrongly_answered": 60
+    },
+    {
+      "threshold": 0.6,
+      "answered_share": 0.25,
+      "answered_accuracy": 0.4909090909090909,
+      "routed_to_agent_share": 0.75,
+      "other_routed_to_agent": 0.8360128617363344,
+      "supported_wrongly_answered": 56
+    },
+    {
+      "threshold": 0.65,
+      "answered_share": 0.22272727272727272,
+      "answered_accuracy": 0.47959183673469385,
+      "routed_to_agent_share": 0.7772727272727272,
+      "other_routed_to_agent": 0.8488745980707395,
+      "supported_wrongly_answered": 51
+    },
+    {
+      "threshold": 0.7,
+      "answered_share": 0.19318181818181818,
+      "answered_accuracy": 0.4823529411764706,
+      "routed_to_agent_share": 0.8068181818181818,
+      "other_routed_to_agent": 0.8713826366559485,
+      "supported_wrongly_answered": 44
+    },
+    {
+      "threshold": 0.75,
+      "answered_share": 0.16136363636363638,
+      "answered_accuracy": 0.5211267605633803,
+      "routed_to_agent_share": 0.8386363636363636,
+      "other_routed_to_agent": 0.9035369774919614,
+      "supported_wrongly_answered": 34
+    },
+    {
+      "threshold": 0.8,
+      "answered_share": 0.12954545454545455,
+      "answered_accuracy": 0.5789473684210527,
+      "routed_to_agent_share": 0.8704545454545455,
+      "other_routed_to_agent": 0.9260450160771704,
+      "supported_wrongly_answered": 24
+    },
+    {
+      "threshold": 0.85,
+      "answered_share": 0.10681818181818181,
+      "answered_accuracy": 0.5957446808510638,
+      "routed_to_agent_share": 0.8931818181818182,
+      "other_routed_to_agent": 0.9421221864951769,
+      "supported_wrongly_answered": 19
+    },
+    {
+      "threshold": 0.9,
+      "answered_share": 0.08636363636363636,
+      "answered_accuracy": 0.6842105263157895,
+      "routed_to_agent_share": 0.9136363636363637,
+      "other_routed_to_agent": 0.9614147909967846,
+      "supported_wrongly_answered": 12
+    },
+    {
+      "threshold": 0.95,
+      "answered_share": 0.07045454545454545,
+      "answered_accuracy": 0.6451612903225806,
+      "routed_to_agent_share": 0.9295454545454546,
+      "other_routed_to_agent": 0.9646302250803859,
+      "supported_wrongly_answered": 11
+    }
+  ],
+  "other_routing": {
+    "by_group": {
+      "other crops": {
+        "images": 65,
+        "routed_to_agent": 0.9846153846153847
+      },
+      "potato": {
+        "images": 54,
+        "routed_to_agent": 0.8888888888888888
+      },
+      "tomato other diseases": {
+        "images": 192,
+        "routed_to_agent": 0.9791666666666666
+      }
+    },
+    "by_source": {
+      "field_plantdoc__bellpepperleaf": {
+        "images": 15,
+        "routed_to_agent": 1.0
+      },
+      "field_plantdoc__bellpepperleafspot": {
+        "images": 17,
+        "routed_to_agent": 0.9411764705882353
+      },
+      "field_plantdoc__potatoleafearlyblight": {
+        "images": 29,
+        "routed_to_agent": 0.896551724137931
+      },
+      "field_plantdoc__potatoleaflateblight": {
+        "images": 25,
+        "routed_to_agent": 0.88
+      },
+      "field_plantdoc__squashpowderymildewleaf": {
+        "images": 33,
+        "routed_to_agent": 1.0
+      },
+      "field_plantdoc__tomatoleafbacterialspot": {
+        "images": 28,
+        "routed_to_agent": 0.9642857142857143
+      },
+      "field_plantdoc__tomatoleafmosaicvirus": {
+        "images": 14,
+        "routed_to_agent": 1.0
+      },
+      "field_plantdoc__tomatoleafyellowvirus": {
+        "images": 19,
+        "routed_to_agent": 1.0
+      },
+      "field_plantdoc__tomatomoldleaf": {
+        "images": 22,
+        "routed_to_agent": 0.9545454545454546
+      },
+      "field_plantdoc__tomatoseptorialeafspot": {
+        "images": 38,
+        "routed_to_agent": 1.0
+      },
+      "field_tomatoleafpakist__tomatoleafyellowcurlviru": {
+        "images": 12,
+        "routed_to_agent": 1.0
+      },
+      "field_tomatoleafpakist__tomatomoldleaf": {
+        "images": 38,
+        "routed_to_agent": 0.9473684210526315
+      },
+      "field_tomatoleafpakist__tomatoseptorialeafspot": {
+        "images": 21,
+        "routed_to_agent": 1.0
+      }
+    }
+  },
+  "by_dataset": {
+    "plantdoc": {
+      "images": 306,
+      "accuracy": 0.7483660130718954,
+      "supported_images": 66,
+      "supported_correct_answers": 17,
+      "wrong_answers": 9,
+      "other_routed_to_agent": 0.9625,
+      "per_class_recall": {
+        "Tomato___Early_blight": 0.45454545454545453,
+        "Tomato___Late_blight": 0.7857142857142857,
+        "Tomato___healthy": 0.5625,
+        "Tomato___other": 0.7833333333333333
+      }
+    },
+    "tomatoleafpakist": {
+      "images": 134,
+      "accuracy": 0.5746268656716418,
+      "supported_images": 63,
+      "supported_correct_answers": 3,
+      "wrong_answers": 2,
+      "other_routed_to_agent": 0.971830985915493,
+      "per_class_recall": {
+        "Tomato___Early_blight": 0.47619047619047616,
+        "Tomato___Late_blight": 0.6153846153846154,
+        "Tomato___healthy": 0.034482758620689655,
+        "Tomato___other": 0.8169014084507042
+      }
+    }
+  }
+}

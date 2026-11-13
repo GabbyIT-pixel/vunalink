@@ -34,29 +34,28 @@ Install the app or visit required routes once while online so service-worker cac
 
 ## Machine-learning model
 
-The browser model is `public/models/vunalink-mobilenet-v2.onnx`, version `0.4.0` (8.9 MB). It is a MobileNetV2 classifier fine-tuned on PlantVillage images (tomato, plus potato and other crops as "other") and PlantDoc field photos, and executed with `onnxruntime-web`.
+The browser model is `public/models/vunalink-mobilenet-v2.onnx`, version `0.5.0` (8.9 MB). It is a MobileNetV2 classifier fine-tuned on PlantVillage images (tomato, plus potato and other crops as "other") and two field-photo datasets (PlantDoc and a Pakistan smartphone dataset), and executed with `onnxruntime-web`.
 
 - Input: `224 × 224 × 3`, RGB, `float32`, NHWC.
 - Output: four `float32` temperature-calibrated softmax probabilities.
 - Classes (in output order): tomato early blight, tomato late blight, tomato healthy, and "other": anything the app doesn't diagnose (the seven other PlantVillage tomato diseases, potato, other crops, photos without leaves). "Other" has no treatment guidance; it always routes to an agent. The class is still named `Tomato___other`.
-- Unsure rule: if the top class is "other", or its probability is below **0.95**, the app shows "Ask an extension agent" instead of a diagnosis. The threshold is in `lib/ml/model.ts` and must match `public/models/model_metadata.json`; a test checks this.
+- Unsure rule: if the top class is "other", or its probability is below **0.82**, the app shows "Ask an extension agent" instead of a diagnosis. The threshold is in `lib/ml/model.ts` and must match `public/models/model_metadata.json`; a test checks this.
 - Browser preprocessing: resize to 224 × 224, read RGB pixels, and pass raw values in NHWC order. The MobileNetV2 formula `(pixel / 127.5) - 1` is embedded in the graph and must not be applied again.
 - Runtime: ONNX Runtime Web using local WebAssembly assets.
 - Metadata and mapping: `public/models/model_metadata.json` and `public/models/class_mapping.json`.
 
 ### Results
 
-Measured on held-out photos that were never used for training:
+v0.5.0 and the previous model (v0.4.0) scored on the same held-out photos, never used for training (v0.5.0 at its 0.82 threshold, v0.4.0 at 0.95):
 
-| | Lab photos (PlantVillage, 1,149) | Field photos (PlantDoc, 306) |
-|---|---|---|
-| Accuracy | 94.5% (v0.3.0: 86.0%) | 74.8% (v0.3.0: 74.2%) |
-| Potato photos sent to an agent | 98% (v0.3.0: 54%) | 89% (v0.3.0: 59%) |
-| Other-crop photos sent to an agent | 99% (v0.3.0: 85%) | 98% (v0.3.0: 89%) |
-| Wrong diagnoses shown | 6 (v0.3.0: 69) | 9 (v0.3.0: 32) |
-| Answers that are right, at the threshold | 98.9% | 65.4% (26 answered) |
+| | Lab (PlantVillage, 1,149) | Field: PlantDoc (306) | Field: Pakistan (134) |
+|---|---|---|---|
+| Accuracy | 96.1% (v0.4.0: 95.9%) | 81.0% (v0.4.0: 74.8%) | 74.6% (v0.4.0: 57.5%) |
+| Correct diagnoses on supported tomato photos | 580 of 673 (544) | 18 of 66 (17) | 25 of 63 (3) |
+| Wrong diagnoses shown | 3 (3) | 9 (9) | 3 (2) |
+| Potato sent to an agent | 99% (98%) | 94% (89%) | none in this set |
 
-Both models were scored on the same photos. v0.4.0 is much safer than v0.3.0: it sends most potato and other-crop photos to an agent and shows far fewer wrong diagnoses. The cost is that it answers fewer real tomato field photos directly (17 correct direct answers on the 66 supported tomato field photos, against 43 for v0.3.0, which also gave 32 wrong ones). Field photos are from PlantDoc (CC BY 4.0, Singh et al., 2020): web photos, not Rwandan farms, and from the same source as the field training photos, so they are an optimistic proxy. Independent validation on Rwandan farm photos is still required. Full details are in [`ml/README.md`](ml/README.md) and `ml/artifacts/`.
+On field photos overall, v0.5.0 gives more than twice the correct diagnoses (43 against 20) with about the same number of wrong ones (12 against 11); when it does answer, it is right 78% of the time. Most real tomato field photos still get "Ask an extension agent". Field photos are from PlantDoc (web photos; CC BY 4.0, Singh et al., 2020) and a Pakistan smartphone dataset (picked leaves on white paper; CC BY 4.0), not Rwandan farms, so they are a proxy. Independent validation on Rwandan farm photos is still required. Full details are in [`ml/README.md`](ml/README.md) and `ml/artifacts/`.
 
 ## Development
 
@@ -95,8 +94,8 @@ tests/                Critical application behavior tests
 
 ## Limitations
 
-- Tomato only. The model diagnoses tomato early blight, late blight and healthy leaves; everything else should go to an agent, but not always: some potato photos still get a tomato result (on a 10-photo team check, a healthy potato leaf was called healthy tomato at 97%), and it can confidently misclassify tomato diseases it has never seen (a leaf that looks like powdery mildew was called late blight).
-- On real tomato field photos it often says "not sure" rather than diagnosing (about a quarter get a correct direct answer on PlantDoc). It needs labelled tomato photos from Rwandan farms to do better.
+- Tomato only. The model diagnoses tomato early blight, late blight and healthy leaves; everything else should go to an agent, but not always: a few potato photos may still get a tomato result (6% of potato field test photos), and it can confidently misclassify tomato diseases it has never seen (a leaf that looks like powdery mildew was called late blight).
+- On real tomato field photos it often says "not sure" rather than diagnosing (about a third get a correct direct answer). Early blight is the weakest class on field photos. It needs labelled tomato photos from Rwandan farms to do better.
 - Photos without leaves (people, documents, fruit) are trained into "other" from PlantVillage's background folder and usually go to an agent, but this is not guaranteed.
 - Field accuracy is measured on PlantDoc web photos, not Rwandan farms. Independent Rwanda field validation is required before any field-accuracy claim.
 - The new "ask an agent" texts and the testing notice in Kinyarwanda need review by a native speaker or agronomist.

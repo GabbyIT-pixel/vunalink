@@ -71,35 +71,39 @@ train/val folders, which are pooled and re-split) and PlantDoc all work. Graysca
 segmented PlantVillage variants are skipped. Don't point them at augmented copies of
 PlantVillage: near-duplicate images would leak between train and test.
 
-## Current model: v0.4.0
+## Current model: v0.5.0
 
 Trained on PlantVillage (tomato, plus potato, other crops and photos without leaves in
-"other") and PlantDoc field photos. v0.4.0 and the previous app model (v0.3.0) were both scored
-on the same held-out photos: 1,149 lab photos and 306 PlantDoc field photos (never trained on).
-v0.3.0 at its 0.90 threshold, v0.4.0 at 0.95.
+"other"), PlantDoc and the Pakistan field dataset (raw photos only; its augmented copies are
+skipped). v0.5.0 and the previous app model (v0.4.0) were scored on the same held-out photos:
+1,149 lab photos, 306 PlantDoc and 134 Pakistan field photos, none used for training.
+v0.5.0 at its 0.82 threshold, v0.4.0 at 0.95.
 
-| | Lab v0.4.0 | Lab v0.3.0 | Field v0.4.0 | Field v0.3.0 |
+| | Lab v0.5.0 | Lab v0.4.0 | Field v0.5.0 | Field v0.4.0 |
 |---|---|---|---|---|
-| Accuracy | 94.5% | 86.0% | 74.8% | 74.2% |
-| Macro F1 | 0.94 | 0.86 | 0.58 | 0.65 |
-| Early / late blight / healthy F1 | 0.90 / 0.93 / 0.98 | 0.81 / 0.89 / 0.92 | 0.42 / 0.57 / 0.51 | 0.61 / 0.53 / 0.65 |
-| Potato sent to an agent | 98% | 54% | 89% | 59% |
-| Other crops sent to an agent | 99% | 85% | 98% | 89% |
-| Other tomato diseases sent to an agent | 99% | 99% | 98% | 98% |
-| Wrong diagnoses shown | 6 | 69 | 9 | 32 |
-| Answers right / photos answered | 98.9% / 48% | 89.7% / 58% | 65.4% / 8.5% | 57.3% / 24.5% |
+| Accuracy | 96.1% | 95.9% | 79.1% | 69.5% |
+| Macro F1 | 0.95 | 0.95 | 0.66 | 0.53 |
+| Correct diagnoses (supported tomato photos) | 580 of 673 | 544 of 673 | 43 of 129 | 20 of 129 |
+| Wrong diagnoses shown | 3 | 3 | 12 | 11 |
+| Answers right / photos answered | 99.5% / 51% | 99.5% / 48% | 78.2% / 12.5% | 64.5% / 7.0% |
+| Potato sent to an agent | 99% | 98% | 94% | 89% |
+| Other crops sent to an agent | 99% | 99% | 98.5% | 98.5% |
 
-v0.4.0 fixes most of the potato and other-crop confusion and shows far fewer wrong diagnoses,
-but on field photos it sends more real tomato leaves to "other" (24 of 66 against 7 of 66), so
-it gives fewer direct answers: 17 correct ones against v0.3.0's 43. More labelled tomato field
-photos are the way to win those back.
+Per field dataset (correct diagnoses / wrong ones): PlantDoc 18 / 9 (v0.4.0: 17 / 9),
+Pakistan 25 / 3 (v0.4.0: 3 / 2). The gain is mostly on the Pakistan-style photos (picked
+leaves on white paper); PlantDoc web photos barely changed. Early blight remains the weakest
+class on field photos (recall 0.27 on PlantDoc, 0.48 on Pakistan).
 
-The unsure threshold is **0.95**, chosen automatically on the 183 field validation photos (the
-80% answered-accuracy target wasn't reached, so it went to the 0.95 cap). On those photos 0.90
-and 0.95 gave the same 5 wrong answers; on the field test, both gave 9.
+The Pakistan download is about 7,200 images, but most are augmented copies; only about 530
+raw photos are used.
 
-Comparison files: `artifacts/baseline_v0.3.0_lab_test.json` and
-`artifacts/baseline_v0.3.0_field_test.json`.
+The unsure threshold is **0.82**, chosen automatically on the 262 field validation photos
+(lowest threshold with at least 80% of answers right). On the field test, 0.90 would cut
+wrong answers from 12 to 4 but drop correct ones from 43 to 34; change both
+`model_metadata.json` and `lib/ml/model.ts` if the team prefers that.
+
+Comparison files: `artifacts/baseline_v0.4.0_lab_test.json` and
+`artifacts/baseline_v0.4.0_field_test.json`.
 
 Field numbers are from PlantDoc (web photos, small test set, same source as the field training
 photos), so they are an optimistic proxy for Rwandan farms, not a substitute for local testing.
@@ -140,9 +144,10 @@ Folders with "augment" in the name are skipped, since augmented copies leak betw
 
 Public field datasets worth adding (both CC BY 4.0; credit them when you show results):
 
-- [Tomato Leaf Disease Classification Dataset in Pakistan](https://data.mendeley.com/datasets/3mbnb82mxd):
-  7,200 smartphone photos taken in fields; early blight, late blight, healthy, Septoria,
-  leaf mold, yellow leaf curl virus.
+- [Tomato Leaf Disease Classification Dataset in Pakistan](https://data.mendeley.com/datasets/3mbnb82mxd)
+  (used from v0.5.0): about 7,200 images, but mostly augmented copies; about 530 raw
+  smartphone photos of picked leaves on white paper. Early blight, late blight, healthy,
+  Septoria, leaf mold, yellow leaf curl virus.
 - [Tomato Leaf Disease Classification Dataset (Bangladesh)](https://data.mendeley.com/datasets/jttrv2w27r):
   2,995 photos; early blight 524, late blight 112, healthy 380, plus four other problems.
 

@@ -1,7 +1,7 @@
 {
   "name": "VunaLink MobileNetV2 (tomato)",
-  "version": "0.4.0",
-  "created_at": "2026-11-13T07:53:21+00:00",
+  "version": "0.5.0",
+  "created_at": "2026-11-13T12:18:31+00:00",
   "format": "keras",
   "dataset": "PlantVillage",
   "crop": "tomato",
@@ -38,14 +38,14 @@
   },
   "calibration": {
     "method": "temperature scaling on validation split, folded into the classifier layer",
-    "temperature": 1.1816574134213722,
-    "unsure_threshold": 0.95,
-    "threshold_source": "183 field validation photos",
+    "temperature": 1.332566917765362,
+    "unsure_threshold": 0.82,
+    "threshold_source": "262 field validation photos",
     "lab_threshold": 0.7,
-    "field_threshold": 0.95,
+    "field_threshold": 0.82,
     "unsure_rule": "ask an agent if the top class is 'Tomato___other' or its probability is below unsure_threshold",
     "target_answered_accuracy": 0.95,
-    "note": "Chosen automatically on 183 PlantDoc field validation photos (field target not reached, so the 0.95 cap). Field photos are web photos, not Rwandan farms; re-check when farm photos are available."
+    "note": "Chosen automatically on 262 field validation photos (PlantDoc + Pakistan). Field photos are not Rwandan farms; re-check when farm photos are available."
   },
   "training": {
     "input_width": 224,
@@ -59,26 +59,26 @@
     "early_stopping_patience": 5,
     "weights": "imagenet",
     "train_counts": {
-      "Tomato___Early_blight": 859,
-      "Tomato___Late_blight": 1529,
-      "Tomato___healthy": 1223,
-      "Tomato___other": 3947
+      "Tomato___Early_blight": 908,
+      "Tomato___Late_blight": 1559,
+      "Tomato___healthy": 1292,
+      "Tomato___other": 4117
     },
     "class_weight": {
-      "Tomato___Early_blight": 2.19965075669383,
-      "Tomato___Late_blight": 1.2357750163505559,
-      "Tomato___healthy": 1.544971381847915,
-      "Tomato___other": 0.4787180136812769
+      "Tomato___Early_blight": 2.1685022026431717,
+      "Tomato___Late_blight": 1.262989095574086,
+      "Tomato___healthy": 1.5239938080495357,
+      "Tomato___other": 0.4782608695652174
     },
     "head": {
-      "epochs_run": 14,
-      "best_val_loss": 0.5007526874542236,
-      "best_val_accuracy": 0.7993989586830139
+      "epochs_run": 8,
+      "best_val_loss": 0.5923262238502502,
+      "best_val_accuracy": 0.7659574747085571
     },
     "fine_tune": {
-      "epochs_run": 15,
-      "best_val_loss": 0.20145559310913086,
-      "best_val_accuracy": 0.9353869557380676
+      "epochs_run": 20,
+      "best_val_loss": 0.22201570868492126,
+      "best_val_accuracy": 0.9297872185707092
     }
   }
 }
