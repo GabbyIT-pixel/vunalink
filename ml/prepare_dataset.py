@@ -1,8 +1,9 @@
 """Build the 4-class tomato dataset (early blight, late blight, healthy, other) and split it.
 
-The "other" class is sampled from the remaining PlantVillage tomato diseases so the
-model can say "this is a tomato problem I don't give advice for" instead of forcing one
-of the three supported diagnoses. Exact-duplicate images are removed before splitting,
+The "other" class holds everything that isn't one of the three supported tomato classes:
+the other PlantVillage tomato diseases, potato, other crops and photos without leaves
+(groups and shares in class_config.json). The model can then say "not something I give
+advice for" instead of forcing one of the three supported diagnoses. Exact-duplicate images are removed before splitting,
 so no image can appear in both train and test.
 
 With --field-dir, field photos (PlantDoc train/validation from prepare_field_eval.py) are
@@ -20,7 +21,7 @@ from pathlib import Path
 from PIL import Image
 from sklearn.model_selection import train_test_split
 
-from common import disease_id, find_class_dirs, image_files, load_config, model_classes, normalize
+from common import discover_class_dirs, disease_id, image_files, load_config, model_classes, normalize
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--source-dir", required=True, help="Folder containing PlantVillage class folders (searched recursively)")
@@ -37,18 +38,21 @@ output = Path(args.output_dir)
 if output.exists():
     shutil.rmtree(output)
 
-found = find_class_dirs(args.source_dir, targets + other["source_classes"])
-missing = [name for name in targets if not found[name]]
+discovered = discover_class_dirs(args.source_dir)
+
+
+def dirs_for(name):
+    return discovered.get(normalize(name), (name, []))[1]
+
+
+missing = [name for name in targets if not dirs_for(name)]
 if missing:
     raise SystemExit(f"Target classes not found under {args.source_dir}: {missing}. Check the dataset path.")
-missing_other = [name for name in other["source_classes"] if not found[name]]
-if missing_other:
-    print(f"Warning: 'other' source classes not found and skipped: {missing_other}")
 
 
-def load_records(name):
+def load_records(name, dirs):
     records, seen = [], set()
-    for directory in found[name]:
+    for directory in dirs:
         for path in image_files(directory):
             try:
                 with Image.open(path) as image:
@@ -63,24 +67,73 @@ def load_records(name):
     return records
 
 
-records_by_label = {name: load_records(name) for name in targets}
+records_by_label = {name: load_records(name, dirs_for(name)) for name in targets}
 target_counts = sorted(len(rows) for rows in records_by_label.values())
-other_budget = other["max_images"] or target_counts[len(target_counts) // 2]
+other_budget = round(other.get("budget_multiplier", 1.0) * target_counts[len(target_counts) // 2])
+
+# Resolve each "other" group to its source folders.
+claimed = {normalize(name) for name in targets}
+for group in other["groups"]:
+    if group["sources"] != "auto":
+        claimed |= {normalize(name) for name in group["sources"]}
+group_sources = {}
+for group in other["groups"]:
+    if group["sources"] == "auto":
+        names = [display for key, (display, _) in sorted(discovered.items())
+                 if "___" in display and not key.startswith("tomato") and key not in claimed]
+        names += [name for name in group.get("include", []) if dirs_for(name)]
+        for name in group.get("include", []):
+            if not dirs_for(name):
+                print(f"Warning: '{name}' not found; group '{group['name']}' goes without it.")
+    else:
+        names = [name for name in group["sources"] if dirs_for(name)]
+        for name in group["sources"]:
+            if not dirs_for(name):
+                print(f"Warning: '{name}' not found; group '{group['name']}' goes without it.")
+    group_sources[group["name"]] = names
 
 rng = random.Random(seed)
-other_pool = {name: load_records(name) for name in other["source_classes"] if found[name]}
-for rows in other_pool.values():
-    rng.shuffle(rows)
-# Round-robin across source diseases so every one is represented evenly.
-other_rows, sources = [], [rows for rows in other_pool.values() if rows]
-while len(other_rows) < other_budget and sources:
-    for rows in list(sources):
+pools = {}
+for group in other["groups"]:
+    per_source = []
+    for name in group_sources[group["name"]]:
+        rows = load_records(discovered[normalize(name)][0], dirs_for(name))
+        rng.shuffle(rows)
         if rows:
-            other_rows.append(rows.pop())
-            if len(other_rows) >= other_budget:
-                break
-        else:
-            sources.remove(rows)
+            per_source.append(rows)
+    pools[group["name"]] = per_source
+available = {name: sum(len(rows) for rows in pool) for name, pool in pools.items()}
+
+# Split the budget by share; a group that runs short passes its unused budget to the others.
+quota = {g["name"]: 0 for g in other["groups"]}
+remaining = other_budget
+while remaining > 0:
+    open_groups = [g for g in other["groups"] if quota[g["name"]] < available[g["name"]]]
+    if not open_groups:
+        break
+    total_share = sum(g["share"] for g in open_groups)
+    given = 0
+    for g in open_groups:
+        extra = min(max(1, round(remaining * g["share"] / total_share)), available[g["name"]] - quota[g["name"]], remaining - given)
+        quota[g["name"]] += extra
+        given += extra
+    remaining -= given
+    if given == 0:
+        break
+
+other_rows, other_by_group = [], {}
+for name, pool in pools.items():
+    # Round-robin across a group's sources so every one is represented evenly.
+    picked, sources = [], [rows for rows in pool if rows]
+    while len(picked) < quota[name] and sources:
+        for rows in list(sources):
+            if rows and len(picked) < quota[name]:
+                picked.append(rows.pop())
+            if not rows:
+                sources.remove(rows)
+    other_rows += picked
+    other_by_group[name] = {"images": len(picked), "sources": group_sources[name]}
+print(f"Other budget {other_budget}: " + ", ".join(f"{k} {v['images']}" for k, v in other_by_group.items()))
 records_by_label[other["label"]] = other_rows
 
 # Drop any image that appears under two labels (would leak and confuse training).
@@ -104,7 +157,7 @@ valid_rows, test_rows = train_test_split(
 )
 
 classes = model_classes(config)
-manifest = {"classes": classes, "splits": {}}
+manifest = {"classes": classes, "other_groups": other_by_group, "splits": {}}
 for split, rows in {"train": train_rows, "validation": valid_rows, "test": test_rows}.items():
     for label in classes:
         (output / split / label).mkdir(parents=True, exist_ok=True)

@@ -8,17 +8,41 @@
   ],
   "other_class": {
     "label": "Tomato___other",
-    "source_classes": [
-      "Tomato___Bacterial_spot",
-      "Tomato___Leaf_Mold",
-      "Tomato___Septoria_leaf_spot",
-      "Tomato___Spider_mites Two-spotted_spider_mite",
-      "Tomato___Target_Spot",
-      "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
-      "Tomato___Tomato_mosaic_virus"
+    "meaning": "Anything that isn't one of the three supported tomato classes: other tomato diseases, potato, other crops, and photos without leaves. The app routes it to an extension agent.",
+    "budget_multiplier": 2.0,
+    "groups": [
+      {
+        "name": "tomato_diseases",
+        "share": 0.5,
+        "sources": [
+          "Tomato___Bacterial_spot",
+          "Tomato___Leaf_Mold",
+          "Tomato___Septoria_leaf_spot",
+          "Tomato___Spider_mites Two-spotted_spider_mite",
+          "Tomato___Target_Spot",
+          "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+          "Tomato___Tomato_mosaic_virus"
+        ]
+      },
+      {
+        "name": "potato",
+        "share": 0.25,
+        "sources": [
+          "Potato___Early_blight",
+          "Potato___Late_blight",
+          "Potato___healthy"
+        ]
+      },
+      {
+        "name": "other_crops",
+        "share": 0.25,
+        "sources": "auto",
+        "include": [
+          "Background_without_leaves"
+        ]
+      }
     ],
-    "max_images": null,
-    "note": "max_images null means: match the median size of the target classes, sampled evenly across source classes."
+    "note": "Budget = budget_multiplier x the median size of the target classes, split between groups by share and sampled evenly across each group's sources. 'auto' = every PlantVillage folder (name with ___) that isn't tomato or already in another group, plus 'include'. Unused budget from a small group moves to the others."
   },
   "field_eval": {
     "dataset": "PlantDoc",
@@ -31,7 +55,12 @@
       "Tomato leaf mosaic virus": "Tomato___other",
       "Tomato leaf yellow virus": "Tomato___other",
       "Tomato mold leaf": "Tomato___other",
-      "Tomato two spotted spider mites leaf": "Tomato___other"
+      "Tomato two spotted spider mites leaf": "Tomato___other",
+      "Potato leaf early blight": "Tomato___other",
+      "Potato leaf late blight": "Tomato___other",
+      "Squash Powdery mildew leaf": "Tomato___other",
+      "Bell_pepper leaf": "Tomato___other",
+      "Bell_pepper leaf spot": "Tomato___other"
     },
     "split": {
       "train": 0.6,

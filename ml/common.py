@@ -52,3 +52,19 @@ def find_class_dirs(root, wanted):
 
 def image_files(directory):
     return sorted(p for p in directory.iterdir() if p.is_file() and p.suffix.lower() in IMAGE_SUFFIXES)
+
+
+def discover_class_dirs(root):
+    """All image folders under root, grouped by normalized folder name: {normalized: (first name seen, [dirs])}.
+
+    Skips grayscale/segmented PlantVillage variants. Used to find "every other crop" without
+    hard-coding names, which differ between PlantVillage copies (e.g. Corn___ vs Corn_(maize)___).
+    """
+    found = {}
+    for directory in sorted(Path(root).rglob("*")):
+        if not directory.is_dir() or any(hint in str(directory).lower() for hint in SKIP_DIR_HINTS):
+            continue
+        if has_images(directory):
+            name, dirs = found.setdefault(normalize(directory.name), (directory.name, []))
+            dirs.append(directory)
+    return found

@@ -10,11 +10,22 @@ from the Next.js app; nothing here runs in the browser.
 | 0 | `Tomato___Early_blight` | Diagnosis + guidance |
 | 1 | `Tomato___Late_blight` | Diagnosis + guidance |
 | 2 | `Tomato___healthy` | "Appears healthy" + monitoring advice |
-| 3 | `Tomato___other` | **Ask an agent**: another tomato problem the app doesn't advise on |
+| 3 | `Tomato___other` | **Ask an agent**: anything the app doesn't diagnose |
 
-"Other" is sampled evenly from the 7 remaining PlantVillage tomato diseases (bacterial
-spot, leaf mold, Septoria, spider mites, target spot, yellow leaf curl, mosaic virus), so
-the model can recognise "not one of the three" instead of forcing a wrong diagnosis.
+"Other" holds everything that isn't one of the three supported tomato classes, so the
+model can recognise "not one of the three" instead of forcing a wrong diagnosis. From
+v0.4.0 its budget (2x the median supported class) is split into groups
+(`other_class.groups` in `class_config.json`):
+
+- half: the 7 other PlantVillage tomato diseases (bacterial spot, leaf mold, Septoria,
+  spider mites, target spot, yellow leaf curl, mosaic virus);
+- a quarter: potato (early blight, late blight, healthy), which looks very like tomato;
+- a quarter: every other PlantVillage crop, found automatically, plus photos without
+  leaves (`Background_without_leaves`, when the dataset has it).
+
+v0.3.0 only had the tomato diseases in "other", so it called potato leaves tomato: on
+PlantDoc field photos it sent only 59% of potato photos to an agent.
+The class keeps the name `Tomato___other` so the app's labels don't change.
 Class ids follow alphabetical folder order, which is what Keras uses.
 
 The app also routes to an agent when the top probability is below the **unsure
@@ -85,15 +96,16 @@ photos), so they are an optimistic proxy for Rwandan farms, not a substitute for
 ## Field photos (PlantDoc)
 
 `prepare_field_eval.py` pools all PlantDoc tomato images (its own test folder has only
-~69), removes duplicates and splits them 60/15/25 into `field/train`, `field/validation`
+~69), plus its potato, squash powdery mildew and bell pepper photos as "other", removes duplicates and splits them 60/15/25 into `field/train`, `field/validation`
 and `field/test`, stratified by PlantDoc disease. With `--field-dir`, `prepare_dataset.py`
 adds field train photos (each repeated `train_repeat` times) and field validation photos
 to the training data. `field/test` is never trained on and is the field estimate.
 The PlantVillage test split stays lab-only, so lab numbers stay comparable.
 
-`artifacts/baseline_v0.2.0_field_test.json` is the v0.2.0 model (trained on lab photos
-only) scored on the same field test photos: 25.1% accuracy, and 18% of its answers right
-at its 0.74 threshold. Newer models should be compared with that.
+The notebook scores the model currently in the app (`public/models`) on the same lab and
+field test photos as the new model, so every comparison is like for like. Earlier
+baselines on the tomato-only field test: v0.2.0 25.1% accuracy
+(`artifacts/baseline_v0.2.0_field_test.json`), v0.3.0 74.9%.
 
 PlantDoc is CC BY 4.0: credit "PlantDoc (Singh et al., 2020)" wherever results are shown.
 
@@ -122,7 +134,9 @@ All settings are in `class_config.json`.
 - `evaluation.json` (PlantVillage test) and `evaluation_field.json` (PlantDoc): accuracy,
   macro precision/recall/F1, per-class metrics, confusion matrix, classes ranked by F1,
   unsure-routing metrics (share answered, answered accuracy, share of "other" routed to
-  an agent) and a threshold sweep.
+  an agent), routing per "other" group (tomato diseases, potato, other crops, no leaf)
+  and per source folder, and a threshold sweep. `evaluate.py` also accepts an `.onnx`
+  file, to score the model in the app.
 
 ## Shipping a new model to the app
 
