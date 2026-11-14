@@ -16,7 +16,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="rw"
       className="h-full antialiased"
     >
-      <body className="min-h-full bg-stone-50 text-stone-950 transition-colors">
+      <body suppressHydrationWarning className="min-h-full bg-stone-50 text-stone-950 transition-colors">
         <ThemeProvider><LanguageProvider>
     {children}<ServiceWorkerRegistration /><InstallPrompt />
   </LanguageProvider></ThemeProvider>
